@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px # Import plotly for the pie chart
-from datetime import date # Import date for date inputs (kept for type hinting, not used for input)
+# from datetime import date # No longer needed for date inputs, but kept for general context if other date ops were relevant
 
 # הגדרת קבועים עבור סכומי ההטבות (יש לעדכן מספרים אלה על פי הנתונים הרשמיים העדכניים)
 # Constants for benefit amounts (these should be updated with official, current figures)
@@ -247,8 +247,7 @@ def calculate_benefits(
 
     if reserve_days >= 10:
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הנחות באגרות רישוי",
+            "קטגוריה": "הטבה / תגמול": "הנחות באגרות רישוי",
             "פירוט והערות": "הנחות אפשריות באגרות רישוי רכב.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
@@ -440,17 +439,17 @@ st.markdown("""
             color: #00796B;
         }
 
-        /* Tab text styling - simplified as requested */
+        /* Tab text styling - normal Streamlit appearance */
         .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-            font-size: 1.1em; /* Normal font size for tab names */
+            font-size: 1em; /* Standard font size */
             font-weight: normal; /* No bold */
-            color: #333; /* Black/dark grey */
+            color: black; /* Default black for normal text */
             padding: 8px 15px;
             transition: color 0.3s ease;
         }
         .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {
-            color: #000; /* Black for active tab */
-            border-bottom: 2px solid #000; /* Subtle black border for active */
+            color: black; /* Black for active tab */
+            border-bottom: 2px solid black; /* Subtle black border for active */
         }
         .stTabs [data-baseweb="tab-list"] button:hover [data-testid="stMarkdownContainer"] p {
             color: #555; /* Slight hover effect */
@@ -481,8 +480,8 @@ if 'selected_tab_index' not in st.session_state:
 if st.session_state.app_mode == 'landing_page':
     # Logo container for landing page
     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    # Replace "YOUR_GITHUB_RAW_LOGO_URL_HERE" with the actual raw URL from GitHub
-    st.image("https://raw.githubusercontent.com/aviluvchik/Miluim_Benefits_App/main/D_logo.png", width=180, caption="Drishti Consulting Logo", use_column_width=False)
+    # Using the correct raw GitHub URL for the logo
+    st.image("https://raw.githubusercontent.com/luvchikavi/Hatavot/main/D_logo.png", width=180, caption="Drishti Consulting Logo", use_column_width=False)
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<h1 class="main-header" style="margin-top: 100px;">ברוכים הבאים למחשבון הטבות המילואים!</h1>', unsafe_allow_html=True)
@@ -513,7 +512,7 @@ if st.session_state.app_mode == 'landing_page':
 
 elif st.session_state.app_mode == 'main_app':
     # Main app content (tabs etc.)
-    # Main header with "טיל" styling
+    # Main header styling (repeated for consistency, consider a function if complex)
     st.markdown('<h1 class="main-header">מחשבון הטבות ושווי יום מילואים</h1>', unsafe_allow_html=True)
     st.markdown('<p class="app-subtitle">כלי עזר לחיילי מילואים להערכת הטבות וחישוב שווי יום שירות.</p>', unsafe_allow_html=True)
     st.markdown("---")
