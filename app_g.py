@@ -309,7 +309,7 @@ def calculate_benefits(
 def add_footer():
     st.markdown("---")
     st.markdown("**@2025 Drishti Consulting | Designed by Dr. Luvchik**", unsafe_allow_html=True)
-    st.markdown("All right reservrd", unsafe_allow_html=True)
+    st.markdown("All right reserved", unsafe_allow_html=True)
 
 # Set application title and page configuration
 st.set_page_config(layout="wide", page_title="מחשבון הטבות ושווי יום מילואים")
@@ -319,14 +319,13 @@ st.markdown("""
         /* General styles for headers */
         .main-header {
             font-size: 3.5em; /* Increased size */
-            color: #004D40;
+            color: black; /* Changed to black */
             text-align: center; /* Center for more impact */
             margin-bottom: 10px; /* Reduced margin */
             font-weight: bold;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.3); /* Stronger "טיל" effect */
-            background: linear-gradient(90deg, #004D40, #00796B, #33AA99); /* Subtle gradient */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Softer shadow */
+            -webkit-background-clip: unset; /* Remove gradient effect */
+            -webkit-text-fill-color: initial; /* Reset text fill color */
             animation: fadeInScale 1s ease-out; /* Simple animation */
         }
         @keyframes fadeInScale {
@@ -336,7 +335,7 @@ st.markdown("""
 
         .app-subtitle {
             font-size: 1.5em; /* Larger */
-            color: #00796B; /* Color */
+            color: #333; /* Darker color (almost black) */
             text-align: right; /* Aligned right as requested */
             margin-top: -10px; /* Pull closer to title */
             margin-bottom: 20px;
@@ -348,22 +347,23 @@ st.markdown("""
             to { opacity: 1; transform: translateX(0); }
         }
 
-        .developed-by {
-            font-size: 1.1em;
-            color: #004D40;
-            text-align: right; /* Align right */
-            margin-bottom: 20px;
-            font-weight: bold;
-            animation: fadeIn 1.5s ease-in; /* Gentle fade in */
+        .developed-by-logo-container {
+            text-align: left; /* Align the logo to the left */
+            position: absolute; /* Position absolutely */
+            top: 20px; /* Distance from top */
+            left: 20px; /* Distance from left */
+            z-index: 1000; /* Ensure it's above other content */
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .developed-by-logo-container img {
+            max-width: 180px; /* Adjust logo size as needed */
+            height: auto;
+            display: block; /* Ensures it takes up its own line */
         }
+
 
         .subheader {
             font-size: 1.8em;
-            color: #00796B;
+            color: #333; /* Changed to black */
             margin-top: 15px;
             margin-bottom: 10px;
             border-bottom: 2px solid #E0F2F1;
@@ -436,20 +436,20 @@ st.markdown("""
             color: #00796B;
         }
 
-        /* Tab text styling - making them more prominent */
+        /* Tab text styling - simplified as requested */
         .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
             font-size: 1.3em; /* Larger font for tab names */
-            font-weight: bold; /* Make them bold */
-            color: #004D40; /* Darker color for prominence */
-            padding: 8px 15px; /* Add some padding */
+            font-weight: normal; /* No bold */
+            color: #333; /* Black/dark grey */
+            padding: 8px 15px;
             transition: color 0.3s ease;
         }
         .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {
-            color: #00796B; /* Active tab color */
-            border-bottom: 3px solid #00796B; /* Stronger active indicator */
+            color: #000; /* Black for active tab */
+            border-bottom: 2px solid #000; /* Subtle black border for active */
         }
         .stTabs [data-baseweb="tab-list"] button:hover [data-testid="stMarkdownContainer"] p {
-            color: #00796B; /* Hover color */
+            color: #555; /* Slight hover effect */
         }
 
         /* Footer styling */
@@ -457,15 +457,20 @@ st.markdown("""
             text-align: center;
             padding: 20px;
             margin-top: 50px;
-            color: #555; /* Slightly darker for better visibility */
-            font-size: 1em; /* Slightly larger */
-            border-top: 1px solid #ddd; /* Subtle border */
+            color: #555;
+            font-size: 1em;
+            border-top: 1px solid #ddd;
         }
     </style>
 """, unsafe_allow_html=True)
 
-# "Developed by" header at the very top
-st.markdown('<div class="developed-by">הכלי פותח על ידי חברת Drishti Consulting</div>', unsafe_allow_html=True)
+# Logo placeholder - User needs to host their logo online and provide the URL here
+st.markdown('<div class="developed-by-logo-container">', unsafe_allow_html=True)
+# Replace "YOUR_GITHUB_RAW_LOGO_URL_HERE" with the actual raw URL from GitHub
+# Example: st.image("https://raw.githubusercontent.com/your-username/your-repo-name/main/D_logo.png", width=180)
+st.image("https://placehold.co/180x60/d1d1d1/000000?text=Drishti+Logo", caption="Drishti Consulting Logo Placeholder", use_column_width=False)
+st.markdown('</div>', unsafe_allow_html=True)
+
 
 # Main header with "טיל" styling
 st.markdown('<h1 class="main-header">מחשבון הטבות ושווי יום מילואים</h1>', unsafe_allow_html=True)
@@ -482,9 +487,14 @@ if 'results_calculated' not in st.session_state:
     st.session_state.monetary_breakdown_for_chart = []
     st.session_state.avg_salary_display = 0
     st.session_state.reserve_days_display = 0
+    st.session_state.selected_tab_index = 0 # Default to the first tab (Input Data)
 
 # Create tabs with English names
-tab1, tab2 = st.tabs(["Input Data", "Summary"])
+tab_names = ["Input Data", "Summary"]
+# Removed the 'key' argument from st.tabs() as it's not supported directly here.
+# Removed default_index as it causes TypeError in older versions and handling selection via session state in button.
+tab1, tab2 = st.tabs(tab_names)
+
 
 with tab1:
     st.markdown('<h2 class="subheader">פרטים אישיים ונתוני שירות</h2>', unsafe_allow_html=True)
@@ -583,11 +593,15 @@ with tab1:
             camps_cost, is_tzav_8, mortgage_rent_cost_input, needs_dedicated_medical_assistance, needs_preferred_loans
         )
         st.session_state.results_calculated = True
+        st.session_state.selected_tab_index = 1 # Switch to the Summary tab
         st.session_state.avg_salary_display = avg_salary
         st.session_state.reserve_days_display = reserve_days
-        st.rerun()
+        st.rerun() # Trigger a rerun to update the displayed tab
+
+    add_footer() # Add footer to Input Data tab as well
 
 with tab2:
+    # This block will be displayed if the results_calculated is True, regardless of how the tab was selected.
     if st.session_state.results_calculated:
         st.markdown('<h2 class="subheader">סיכום הטבות וחישובים</h2>', unsafe_allow_html=True)
 
@@ -624,7 +638,7 @@ with tab2:
         
         if chart_data:
             df_chart = pd.DataFrame(chart_data)
-            st.markdown('<h3 style="text-align: center; color: #004D40;">הרכב התוספות הכספיות (למעט תגמול שכר)</h3>', unsafe_allow_html=True)
+            st.markdown('<h3 style="text-align: center; color: #333;">הרכב התוספות הכספיות (למעט תגמול שכר)</h3>', unsafe_allow_html=True) # Color changed to black
             fig = px.pie(df_chart, values='value', names='name',
                          title='פירוט התוספות הכספיות באחוזים',
                          hole=0.4,
