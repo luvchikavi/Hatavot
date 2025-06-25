@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px # Import plotly for the pie chart
-from datetime import date # Import date for date inputs (kept for type hinting, not used for input)
+# from datetime import date # No longer used for direct date inputs
 
-# הגדרת קבועים עבור סכומי ההטבות (יש לעדכן מספרים אלה על פי הנתונים הרשמיים העדכניים)
-# Constants for benefit amounts (these should be updated with official, current figures)
+# הגדרת קבועים עבור סכומי ההטבות (יש לוודא ולעדכן מספרים אלה על פי הנתונים הרשמיים העדכניים)
+# Constants for benefit amounts (these should be verified and updated with official, current figures)
 # הערה: נתונים אלו הם הערכה בלבד ויש לוודא אותם מול מקורות רשמיים.
 # Note: These figures are estimates only and should be verified against official sources.
 ANNUAL_GRANT_PER_DAY_THRESHOLD = 32  # סף ימים למענק שנתי
@@ -54,14 +54,16 @@ def calculate_benefits(
 
     # 1. תגמול ביטוח לאומי (Payment for reserve days based on average salary)
     # הערה: יש לוודא אם החישוב הוא לפי ברוטו או נטו, ולעדכן את ההנחיה למשתמש בהתאם.
+    # עבור עצמאים, חישוב התגמול שונה (לרוב מבוסס על הכנסה חייבת). נדרש מחקר נוסף.
     # Note: It needs to be verified if the calculation is based on gross or net, and update user instructions accordingly.
+    # For self-employed, compensation calculation is different (usually based on taxable income). Further research required.
     daily_salary_compensation = 0
     if avg_salary > 0 and reserve_days > 0:
         daily_salary_compensation = (avg_salary / 30) * reserve_days # assuming avg_salary is monthly
         entitlements.append({
             "קטגוריה": "תשלום שכר",
             "הטבה / תגמול": "תגמול ביטוח לאומי",
-            "פירוט והערות": f"תשלום עבור {reserve_days} ימי מילואים לפי ממוצע שכר חודשי ({avg_salary:,.0f} ש\"ח).",
+            "פירוט והערות": f"תשלום עבור {reserve_days} ימי מילואים לפי ממוצע שכר חודשי ({avg_salary:,.0f} ש\"ח). יש לוודא אם הקלט הוא ברוטו/נטו ורלוונטיות לעצמאים.",
             "סכום משוער (ש״ח)": daily_salary_compensation,
             "סוג תשלום": "מיידי"
         })
@@ -83,7 +85,7 @@ def calculate_benefits(
         entitlements.append({
             "קטגוריה": "מענקים שנתיים",
             "הטבה / תגמול": "מענק שנתי",
-            "פירוט והערות": f"מענק שנתי המשולם ב-1 במאי לשנה העוקבת עבור {reserve_days} ימי שירות.",
+            "פירוט והערות": f"מענק שנתי המשולם ב-1 במאי לשנה העוקבת עבור {reserve_days} ימי שירות. יש לוודא תנאים וסכומים מדויקים.",
             "סכום משוער (ש״ח)": annual_grant,
             "סוג תשלום": "עתידי (מאי)"
         })
@@ -271,7 +273,6 @@ def calculate_benefits(
 
 
     if reserve_days >= 10:
-        # Fixed SyntaxError: invalid syntax by ensuring consistent key formatting
         entitlements.append({
             "קטגוריה": "הטבות כלליות",
             "הטבה / תגמול": "הנחות באגרות רישוי",
@@ -280,36 +281,31 @@ def calculate_benefits(
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות בתחבורה ציבורית",
+            "קטגוריה": "הטבה / תגמול": "הטבות בתחבורה ציבורית",
             "פירוט והערות": "הטבות בשימוש בתחבורה ציבורית.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות בביטוחי בריאות משלימים",
+            "קטגוריה": "הטבה / תגמול": "הטבות בביטוחי בריאות משלימים",
             "פירוט והערות": "הנחות או הטבות בהצטרפות לביטוחי בריאות משלימים.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות בארנונה / מים (רשות מקומית)",
+            "קטגוריה": "הטבה / תגמול": "הטבות בארנונה / מים (רשות מקומית)",
             "פירוט והערות": "הנחות אפשריות בתשלומי ארנונה או מים.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות במוסדות תרבות ופנאי",
+            "קטגוריה": "הטבה / תגמול": "הטבות במוסדות תרבות ופנאי",
             "פירוט והערות": "הנחות או כניסה חינם למוזיאונים, תיאטראות וכדומה.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות בנופש ואירוח",
+            "קטגוריה": "הטבה / תגמול": "הטבות בנופש ואירוח",
             "פירוט והערות": "הנחות בבתי מלון, צימרים או אתרי נופש.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
@@ -549,19 +545,20 @@ if st.session_state.app_mode == 'landing_page':
 
     st.markdown('<h1 class="main-header" style="margin-top: 100px;">ברוכים הבאים למחשבון הטבות המילואים!</h1>', unsafe_allow_html=True)
     st.markdown("""
-        <p style="font-size: 1.2em; text-align: center; color: #333;">
+        <p style="font-size: 1.1em; text-align: right; color: #333;">
             כלי זה פותח על ידי משרת מילואים פעיל, רב-סרן (מיל׳) אבי לובצ׳יק, 
             במחווה למשרתי המילואים, ומטרתו לסייע לכם בהערכה ראשונית של זכויותיכם והטבותיכם.
         </p>
-        <p style="font-size: 1.2em; text-align: center; color: #333;">
-            <strong style="color: red;">חשוב ביותר:</strong> אין להזין נתונים אישיים מזהים כגון תעודת זהות, שם יחידה או מספר אישי. 
-            הכלי הינו אנונימי לחלוטין ומיועד למטרות חישוב כלליות בלבד.
+        <p style="font-size: 1.1em; text-align: right; color: #333;">
+            <strong style="color: red;">חשוב ביותר:</strong> 
         </p>
-        <p style="font-size: 1.2em; text-align: center; color: #333;">
-            <span style="font-weight: bold; color: #004D40;">אנא שימו לב:</span> אין לעשות בכלי זה כל שימוש מסחרי, וכל הזכויות שייכות לחברת <strong>Drishti Consulting</strong>. 
-            מפתח הכלי אינו בקיא באופן מלא בכל היבטי התחום, וייתכנו טעויות או אי-דיוקים בחישובים ובהצגת המידע. 
-            הכלי אינו מהווה ייעוץ משפטי או תחליף לבירור רשמי מול הגופים המוסמכים.
-        </p>
+        <ul style="font-size: 1.1em; text-align: right; color: #333; list-style-position: inside; padding-right: 20px;">
+            <li>אין להזין נתונים אישיים מזהים כגון תעודת זהות, שם יחידה או מספר אישי.</li>
+            <li>הכלי הינו אנונימי לחלוטין ומיועד למטרות חישוב כלליות בלבד.</li>
+            <li>אין לעשות בכלי זה כל שימוש מסחרי, וכל הזכויות שייכות לחברת <strong>Drishti Consulting</strong>.</li>
+            <li>מפתח הכלי אינו בקיא באופן מלא בכל היבטי התחום, וייתכנו טעויות או אי-דיוקים בחישובים ובהצגת המידע.</li>
+            <li>הכלי אינו מהווה ייעוץ משפטי או תחליף לבירור רשמי מול הגופים המוסמכים.</li>
+        </ul>
     """, unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True) # Add some space
