@@ -426,6 +426,23 @@ st.markdown("""
             text-align: right; /* Ensure subheaders are right-aligned */
         }
 
+        /* Styling for input field containers */
+        .input-section-container {
+            border: 1px solid #e6e6e6; /* Light border */
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px; /* Space between sections */
+            background-color: #ffffff; /* White background for sections */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Subtle shadow */
+        }
+        .input-section-container h3 {
+            color: #004D40; /* Dark teal for section titles */
+            margin-top: 0; /* Remove top margin */
+            margin-bottom: 15px; /* Space below title */
+            font-size: 1.5em;
+        }
+
+
         /* Button Styling */
         .stButton>button {
             background-color: #00796B;
@@ -471,8 +488,6 @@ st.markdown("""
         /* Table Styling */
         .stTable, .dataframe {
             font-size: 1.0em;
-            /* text-align: right; -- This is already applied by rtl direction.
-               Individual cell alignment needs to be specific. */
         }
         .stTable thead th, .dataframe thead th {
             text-align: right; /* Align table headers to the right */
@@ -547,7 +562,9 @@ if 'results_calculated' not in st.session_state:
     st.session_state.results_calculated = False
 if 'selected_tab_index' not in st.session_state:
     st.session_state.selected_tab_index = 0 # Default to the first tab (Input Data)
+
 # Initialize variables used in display that are set after calculation
+# These need to be present even if no calculation has happened yet, so they don't throw AttributeError.
 if 'daily_salary_compensation_val' not in st.session_state:
     st.session_state.daily_salary_compensation_val = 0.0
 if 'total_monetary_benefits_immediate' not in st.session_state:
@@ -617,25 +634,19 @@ elif st.session_state.app_mode == 'main_app':
     with tab1:
         st.markdown('<h2 class="subheader">פרטים אישיים ונתוני שירות</h2>', unsafe_allow_html=True)
 
-        col1_input, col2_input = st.columns(2)
-
-        with col1_input:
-            st.markdown("### נתוני שכר ושירות")
+        # Section 1: Salary and Service Data
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>נתוני שכר ושירות</h3>", unsafe_allow_html=True)
             avg_salary = st.number_input("שכר ממוצע ב-3 חודשים אחרונים (נטו, בשקלים):", min_value=0, value=10000, step=100, key="avg_salary_input")
             reserve_days = st.number_input("מספר ימי מילואים ששירתו השנה:", min_value=0, value=30, step=1, key="reserve_days_input")
             unit_type = st.selectbox("סוג יחידה:", ["לוחם", "עורף"], key="unit_type_select")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-            # Replaced date inputs with a single selectbox for holiday periods
-            st.markdown("### תקופת שירות מילואים")
-            is_holiday_period_str = st.selectbox(
-                "האם המילואים היו בתקופה של קייטנות קיץ/פסח/חגי תשרי?",
-                ["לא", "כן"],
-                key="is_holiday_period_select"
-            )
-
-
-        with col2_input:
-            st.markdown("### פרטים משפחתיים וסטטוס")
+        # Section 2: Family and Status Details
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>פרטים משפחתיים וסטטוס</h3>", unsafe_allow_html=True)
             is_married_str = st.selectbox("האם נשואים?", ["לא", "כן"], key="is_married_select")
             is_married = (is_married_str == "כן")
             num_children = st.number_input("מספר ילדים (מתחת לגיל 18):", min_value=0, value=0, step=1, key="num_children_input")
@@ -645,62 +656,118 @@ elif st.session_state.app_mode == 'main_app':
             is_student = (is_student_str == "כן")
             is_tzav_8_str = st.selectbox("האם שירתו בצו 8 השנה?", ["לא", "כן"], key="is_tzav_8_select")
             is_tzav_8 = (is_tzav_8_str == "כן")
-
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Section 3: Reserve Period & Holiday Period
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>תקופת שירות מילואים</h3>", unsafe_allow_html=True)
+            is_holiday_period_str = st.selectbox(
+                "האם המילואים היו בתקופה של קייטנות קיץ/פסח/חגי תשרי?",
+                ["לא", "כן"],
+                key="is_holiday_period_select"
+            )
+            st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('<h2 class="subheader">הוצאות נלוות</h2>', unsafe_allow_html=True)
 
-        road_6_cost_enabled_str = st.selectbox("האם השתמשו בכביש 6?", ["לא", "כן"], key="road_6_enabled_select")
-        road_6_cost_enabled = (road_6_cost_enabled_str == "כן")
-        road_6_cost = 0
-        if road_6_cost_enabled:
-            road_6_cost = st.number_input("עלות שימוש בכביש 6 לחודש (בשקלים):", min_value=0, value=0, step=10, key="road_6_cost_input")
+        # Section 4: Road 6 Cost
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>הוצאות כביש 6</h3>", unsafe_allow_html=True)
+            road_6_cost_enabled_str = st.selectbox("האם השתמשו בכביש 6?", ["לא", "כן"], key="road_6_enabled_select")
+            road_6_cost_enabled = (road_6_cost_enabled_str == "כן")
+            road_6_cost = 0
+            if road_6_cost_enabled:
+                road_6_cost = st.number_input("עלות שימוש בכביש 6 לחודש (בשקלים):", min_value=0, value=0, step=10, key="road_6_cost_input")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        babysitter_cost_enabled_str = st.selectbox("האם שילמו על בייביסיטר?", ["לא", "כן"], key="babysitter_enabled_select")
-        babysitter_cost_enabled = (babysitter_cost_enabled_str == "כן")
-        babysitter_cost = 0
-        if babysitter_cost_enabled:
-            babysitter_cost = st.number_input("עלות בייביסיטר לחודש (בשקלים):", min_value=0, value=0, step=50, key="babysitter_cost_input")
+        # Section 5: Babysitter Cost
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>הוצאות בייביסיטר</h3>", unsafe_allow_html=True)
+            babysitter_cost_enabled_str = st.selectbox("האם שילמו על בייביסיטר?", ["לא", "כן"], key="babysitter_enabled_select")
+            babysitter_cost_enabled = (babysitter_cost_enabled_str == "כן")
+            babysitter_cost = 0
+            if babysitter_cost_enabled:
+                babysitter_cost = st.number_input("עלות בייביסיטר לחודש (בשקלים):", min_value=0, value=0, step=50, key="babysitter_cost_input")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        dog_boarding_cost_enabled_str = st.selectbox("האם שילמו על פנסיון כלבים?", ["לא", "כן"], key="dog_boarding_enabled_select")
-        dog_boarding_cost_enabled = (dog_boarding_cost_enabled_str == "כן")
-        dog_boarding_cost = 0
-        if dog_boarding_cost_enabled:
-            dog_boarding_cost = st.number_input("עלות פנסיון כלבים (בשקלים):", min_value=0, value=0, step=50, key="dog_boarding_cost_input")
+        # Section 6: Dog Boarding Cost
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>הוצאות פנסיון כלבים</h3>", unsafe_allow_html=True)
+            dog_boarding_cost_enabled_str = st.selectbox("האם שילמו על פנסיון כלבים?", ["לא", "כן"], key="dog_boarding_enabled_select")
+            dog_boarding_cost_enabled = (dog_boarding_cost_enabled_str == "כן")
+            dog_boarding_cost = 0
+            if dog_boarding_cost_enabled:
+                dog_boarding_cost = st.number_input("עלות פנסיון כלבים (בשקלים):", min_value=0, value=0, step=50, key="dog_boarding_cost_input")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        vacation_cancel_cost_enabled_str = st.selectbox("האם נאלצו לבטל חופשה/טיסה עקב שירות מילואים?", ["לא", "כן"], key="vacation_cancel_enabled_select")
-        vacation_cancel_cost_enabled = (vacation_cancel_cost_enabled_str == "כן")
-        vacation_cancel_cost = 0
-        if vacation_cancel_cost_enabled:
-            vacation_cancel_cost = st.number_input("עלות ביטול חופשה/טיסה (בשקלים, סכום הפיצוי המגיע):", min_value=0, value=0, step=100, key="vacation_cancel_cost_input")
+        # Section 7: Vacation Cancellation Cost
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>הוצאות ביטול חופשה/טיסה</h3>", unsafe_allow_html=True)
+            vacation_cancel_cost_enabled_str = st.selectbox("האם נאלצו לבטל חופשה/טיסה עקב שירות מילואים?", ["לא", "כן"], key="vacation_cancel_enabled_select")
+            vacation_cancel_cost_enabled = (vacation_cancel_cost_enabled_str == "כן")
+            vacation_cancel_cost = 0
+            if vacation_cancel_cost_enabled:
+                vacation_cancel_cost = st.number_input("עלות ביטול חופשה/טיסה (בשקלים, סכום הפיצוי המגיע):", min_value=0, value=0, step=100, key="vacation_cancel_cost_input")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        therapy_cost_enabled_str = st.selectbox("האם שילמו על טיפול רגשי/נפשי?", ["לא", "כן"], key="therapy_enabled_select")
-        therapy_cost_enabled = (therapy_cost_enabled_str == "כן")
-        therapy_cost = 0
-        if therapy_cost_enabled:
-            therapy_cost = st.number_input("עלות טיפול רגשי/נפשי (בשקלים):", min_value=0, value=0, step=50, key="therapy_cost_input")
+        # Section 8: Therapy Cost
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>הוצאות טיפול רגשי/נפשי</h3>", unsafe_allow_html=True)
+            therapy_cost_enabled_str = st.selectbox("האם שילמו על טיפול רגשי/נפשי?", ["לא", "כן"], key="therapy_enabled_select")
+            therapy_cost_enabled = (therapy_cost_enabled_str == "כן")
+            therapy_cost = 0
+            if therapy_cost_enabled:
+                therapy_cost = st.number_input("עלות טיפול רגשי/נפשי (בשקלים):", min_value=0, value=0, step=50, key="therapy_cost_input")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        camps_cost_enabled_str = st.selectbox("האם שילמו על קייטנות לילדים?", ["לא", "כן"], key="camps_enabled_select")
-        camps_cost_enabled = (camps_cost_enabled_str == "כן")
-        camps_cost = 0
-        if camps_cost_enabled:
-            camps_cost = st.number_input("עלות קייטנות (בשקלים, לשנה):", min_value=0, value=0, step=50, key="camps_cost_input")
+        # Section 9: Camps Cost
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>הוצאות קייטנות</h3>", unsafe_allow_html=True)
+            camps_cost_enabled_str = st.selectbox("האם שילמו על קייטנות לילדים?", ["לא", "כן"], key="camps_enabled_select")
+            camps_cost_enabled = (camps_cost_enabled_str == "כן")
+            camps_cost = 0
+            if camps_cost_enabled:
+                camps_cost = st.number_input("עלות קייטנות (בשקלים, לשנה):", min_value=0, value=0, step=50, key="camps_cost_input")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        tuition_cost_enabled_str = st.selectbox("האם שילמו על שכר לימוד (לסטודנטים)?", ["לא", "כן"], key="tuition_enabled_select")
-        tuition_cost_enabled = (tuition_cost_enabled_str == "כן")
-        tuition_cost = 0
-        if tuition_cost_enabled:
-            tuition_cost = st.number_input("עלות שכר לימוד שנתית (בשקלים):", min_value=0, value=0, step=100, key="tuition_cost_input")
+        # Section 10: Tuition Cost
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>הוצאות שכר לימוד</h3>", unsafe_allow_html=True)
+            tuition_cost_enabled_str = st.selectbox("האם שילמו על שכר לימוד (לסטודנטים)?", ["לא", "כן"], key="tuition_enabled_select")
+            tuition_cost_enabled = (tuition_cost_enabled_str == "כן")
+            tuition_cost = 0
+            if tuition_cost_enabled:
+                tuition_cost = st.number_input("עלות שכר לימוד שנתית (בשקלים):", min_value=0, value=0, step=100, key="tuition_cost_input")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        mortgage_rent_cost_enabled_str = st.selectbox("האם זקוקים/קיבלו סיוע בשכר דירה/משכנתא?", ["לא", "כן"], key='mortgage_rent_checkbox_input')
-        mortgage_rent_cost_enabled = (mortgage_rent_cost_enabled_str == "כן")
-        mortgage_rent_cost_input = 0
-        if mortgage_rent_cost_enabled:
-            mortgage_rent_cost_input = st.number_input("סכום סיוע בשכר דירה/משכנתא (בשקלים):", min_value=0, value=0, step=50, key='mortgage_rent_input_field')
+        # Section 11: Mortgage/Rent Assistance
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>סיוע שכר דירה/משכנתא</h3>", unsafe_allow_html=True)
+            mortgage_rent_cost_enabled_str = st.selectbox("האם זקוקים/קיבלו סיוע בשכר דירה/משכנתא?", ["לא", "כן"], key='mortgage_rent_checkbox_input')
+            mortgage_rent_cost_enabled = (mortgage_rent_cost_enabled_str == "כן")
+            mortgage_rent_cost_input = 0
+            if mortgage_rent_cost_enabled:
+                mortgage_rent_cost_input = st.number_input("סכום סיוע בשכר דירה/משכנתא (בשקלים):", min_value=0, value=0, step=50, key='mortgage_rent_input_field')
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        needs_dedicated_medical_assistance_str = st.selectbox("האם יש צורך בסיוע רפואי ייעודי עקב פציעה/מחלה הקשורה לשירות?", ["לא", "כן"], key="dedicated_medical_select")
-        needs_dedicated_medical_assistance = (needs_dedicated_medical_assistance_str == "כן")
-        needs_preferred_loans_str = st.selectbox("האם מעוניינים לבדוק זכאות להלוואות בתנאים מועדפים?", ["לא", "כן"], key="preferred_loans_select")
-        needs_preferred_loans = (needs_preferred_loans_str == "כן")
+        # Section 12: Medical Assistance & Preferred Loans
+        with st.container():
+            st.markdown('<div class="input-section-container">', unsafe_allow_html=True)
+            st.markdown("<h3>סיוע רפואי והלוואות</h3>", unsafe_allow_html=True)
+            needs_dedicated_medical_assistance_str = st.selectbox("האם יש צורך בסיוע רפואי ייעודי עקב פציעה/מחלה הקשורה לשירות?", ["לא", "כן"], key="dedicated_medical_select")
+            needs_dedicated_medical_assistance = (needs_dedicated_medical_assistance_str == "כן")
+            needs_preferred_loans_str = st.selectbox("האם מעוניינים לבדוק זכאות להלוואות בתנאים מועדפים?", ["לא", "כן"], key="preferred_loans_select")
+            needs_preferred_loans = (needs_preferred_loans_str == "כן")
+            st.markdown('</div>', unsafe_allow_html=True)
 
         if st.button("חשב הטבות", key="calculate_button"):
             st.session_state.entitlements, \
@@ -717,8 +784,8 @@ elif st.session_state.app_mode == 'main_app':
             st.session_state.results_calculated = True
             st.session_state.avg_salary_display = avg_salary
             st.session_state.reserve_days_display = reserve_days
-            # Setting the tab index to switch to the Summary tab - ONLY WORKS WITH UPDATED STREAMLIT
-            st.session_state.selected_tab_index = 1
+            # Removed automatic tab switch due to potential TypeError on older Streamlit versions.
+            # User will need to manually click "Summary" tab.
             st.rerun() # Trigger a rerun to update the displayed content
 
         add_footer() # Add footer to Input Data tab as well
