@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px # Import plotly for the pie chart
-from datetime import date # Import date for date inputs
+from datetime import date # Import date for date inputs (kept for type hinting, not used for input)
 
 # הגדרת קבועים עבור סכומי ההטבות (יש לעדכן מספרים אלה על פי הנתונים הרשמיים העדכניים)
 # Constants for benefit amounts (these should be updated with official, current figures)
@@ -27,7 +27,7 @@ THERAPY_DAYS_THRESHOLD = 20 # ימי שירות לטיפול רגשי בסכום
 TUITION_PERCENT_COMBATANT = 1.0  # 100% החזר שכר לימוד ללוחמים
 TUITION_DAYS_THRESHOLD = 20 # ימי שירות להחזר שכר לימוד
 
-CAMPS_MAX_COMBATANT_FAMILY = 2000  # מקסימום קייטנות למשפחת לוחם
+CAMPS_MAX_COMBATANT_FAMILY = 2000  # מקסימום קייטנות למשפחה לוחם
 SPOUSE_ONE_TIME_GRANT = 4500  # מענק חד פעמי לבן זוג לא עובד
 
 TZAV_8_DAYS_FOR_TRAINING = 45 # ימי שירות בצו 8 להכשרה מקצועית
@@ -37,12 +37,16 @@ def calculate_benefits(
     avg_salary, reserve_days, unit_type, num_children, is_married,
     has_non_working_spouse, is_student, tuition_cost, used_road_6, road_6_cost,
     babysitter_cost, dog_boarding_cost, vacation_cancel_cost, therapy_cost,
-    camps_cost, is_tzav_8, mortgage_rent_cost_input, needs_dedicated_medical_assistance, needs_preferred_loans
+    camps_cost, is_tzav_8, mortgage_rent_cost_input, needs_dedicated_medical_assistance, needs_preferred_loans,
+    is_holiday_period_str # New input parameter
 ):
     entitlements = []
     total_monetary_benefits_immediate = 0
     total_monetary_benefits_future = 0
     monetary_breakdown_for_chart = []
+
+    # Convert string boolean to actual boolean
+    is_holiday_period = (is_holiday_period_str == "כן")
 
     daily_salary_compensation = 0
     if avg_salary > 0 and reserve_days > 0:
@@ -123,7 +127,7 @@ def calculate_benefits(
         max_babysitter_refund = BABYSITTER_MAX_COMBATANT if unit_type == "לוחם" else BABYSITTER_MAX_REAR
         babysitter_refund = min(babysitter_cost, max_babysitter_refund)
         entitlements.append({
-            "קטגוריה": "הHחזרי הוצאות אישיות",
+            "קטגוריה": "החזרי הוצאות אישיות",
             "הטבה / תגמול": "בייביסיטר",
             "פירוט והערות": f"החזר עד {max_babysitter_refund} ש\"ח לחודש (ללוחמים/עורף).",
             "סכום משוער (ש״ח)": babysitter_refund,
@@ -347,19 +351,7 @@ st.markdown("""
             to { opacity: 1; transform: translateX(0); }
         }
 
-        .developed-by-logo-container {
-            text-align: left; /* Align the logo to the left */
-            position: absolute; /* Position absolutely */
-            top: 20px; /* Distance from top */
-            left: 20px; /* Distance from left */
-            z-index: 1000; /* Ensure it's above other content */
-        }
-        .developed-by-logo-container img {
-            max-width: 180px; /* Adjust logo size as needed */
-            height: auto;
-            display: block; /* Ensures it takes up its own line */
-        }
-
+        /* Removed .developed-by-logo-container styling entirely */
 
         .subheader {
             font-size: 1.8em;
@@ -464,13 +456,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo placeholder - User needs to host their logo online and provide the URL here
-st.markdown('<div class="developed-by-logo-container">', unsafe_allow_html=True)
-# Replace "YOUR_GITHUB_RAW_LOGO_URL_HERE" with the actual raw URL from GitHub
-# Example: st.image("https://raw.githubusercontent.com/your-username/your-repo-name/main/D_logo.png", width=180)
-st.image("https://placehold.co/180x60/d1d1d1/000000?text=Drishti+Logo", caption="Drishti Consulting Logo Placeholder", use_column_width=False)
-st.markdown('</div>', unsafe_allow_html=True)
-
 
 # Main header with "טיל" styling
 st.markdown('<h1 class="main-header">מחשבון הטבות ושווי יום מילואים</h1>', unsafe_allow_html=True)
@@ -491,8 +476,9 @@ if 'results_calculated' not in st.session_state:
 
 # Create tabs with English names
 tab_names = ["Input Data", "Summary"]
-# Re-added default_index to enable programmatic tab switching
-tab1, tab2 = st.tabs(tab_names, default_index=st.session_state.selected_tab_index)
+# Removed the 'key' argument and 'default_index' argument to avoid TypeError for older Streamlit versions.
+# The tab selection will now rely on the button logic setting session_state.selected_tab_index and st.rerun().
+tab1, tab2 = st.tabs(tab_names)
 
 
 with tab1:
@@ -506,10 +492,13 @@ with tab1:
         reserve_days = st.number_input("מספר ימי מילואים ששירתו השנה:", min_value=0, value=30, step=1, key="reserve_days_input")
         unit_type = st.selectbox("סוג יחידה:", ["לוחם", "עורף"], key="unit_type_select")
 
-        # Added date inputs for reserve period
+        # Replaced date inputs with a single selectbox for holiday periods
         st.markdown("### תקופת שירות מילואים")
-        start_date = st.date_input("תאריך תחילת שירות מילואים:", value=date.today(), key="start_date_input")
-        end_date = st.date_input("תאריך סיום שירות מילואים:", value=date.today(), key="end_date_input")
+        is_holiday_period_str = st.selectbox(
+            "האם המילואים היו בתקופה של קייטנות קיץ/פסח/חגי תשרי?",
+            ["לא", "כן"],
+            key="is_holiday_period_select"
+        )
 
 
     with col2_input:
@@ -589,7 +578,8 @@ with tab1:
             avg_salary, reserve_days, unit_type, num_children, is_married,
             has_non_working_spouse, is_student, tuition_cost, road_6_cost_enabled, road_6_cost,
             babysitter_cost_enabled, dog_boarding_cost, vacation_cancel_cost, therapy_cost,
-            camps_cost, is_tzav_8, mortgage_rent_cost_input, needs_dedicated_medical_assistance, needs_preferred_loans
+            camps_cost, is_tzav_8, mortgage_rent_cost_input, needs_dedicated_medical_assistance, needs_preferred_loans,
+            is_holiday_period_str # Pass the new input
         )
         st.session_state.results_calculated = True
         st.session_state.selected_tab_index = 1 # Switch to the Summary tab
