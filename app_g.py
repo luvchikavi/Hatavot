@@ -464,12 +464,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo placeholder - User needs to host their logo online and provide the URL here
-st.markdown('<div class="developed-by-logo-container">', unsafe_allow_html=True)
-# Replace "YOUR_GITHUB_RAW_LOGO_URL_HERE" with the actual raw URL from GitHub
-# Example: st.image("https://raw.githubusercontent.com/your-username/your-repo-name/main/D_logo.png", width=180)
-st.image("https://placehold.co/180x60/d1d1d1/000000?text=Drishti+Logo", caption="Drishti Consulting Logo Placeholder", use_column_width=False)
-st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 # Main header with "טיל" styling
