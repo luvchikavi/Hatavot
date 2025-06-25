@@ -123,7 +123,7 @@ def calculate_benefits(
         max_babysitter_refund = BABYSITTER_MAX_COMBATANT if unit_type == "לוחם" else BABYSITTER_MAX_REAR
         babysitter_refund = min(babysitter_cost, max_babysitter_refund)
         entitlements.append({
-            "קטגוריה": "החזרי הוצאות אישיות",
+            "קטגוריה": "הHחזרי הוצאות אישיות",
             "הטבה / תגמול": "בייביסיטר",
             "פירוט והערות": f"החזר עד {max_babysitter_refund} ש\"ח לחודש (ללוחמים/עורף).",
             "סכום משוער (ש״ח)": babysitter_refund,
@@ -438,7 +438,7 @@ st.markdown("""
 
         /* Tab text styling - simplified as requested */
         .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-            font-size: 1.3em; /* Larger font for tab names */
+            font-size: 1.1em; /* Smaller font for tab names */
             font-weight: normal; /* No bold */
             color: #333; /* Black/dark grey */
             padding: 8px 15px;
@@ -491,9 +491,8 @@ if 'results_calculated' not in st.session_state:
 
 # Create tabs with English names
 tab_names = ["Input Data", "Summary"]
-# Removed the 'key' argument from st.tabs() as it's not supported directly here.
-# Removed default_index as it causes TypeError in older versions and handling selection via session state in button.
-tab1, tab2 = st.tabs(tab_names)
+# Re-added default_index to enable programmatic tab switching
+tab1, tab2 = st.tabs(tab_names, default_index=st.session_state.selected_tab_index)
 
 
 with tab1:
