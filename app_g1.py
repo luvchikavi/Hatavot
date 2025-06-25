@@ -299,7 +299,7 @@ def calculate_benefits(
             "קטגוריה": "הטבות כלליות",
             "הטבה / תגמול": "הטבות בארנונה / מים (רשות מקומית)",
             "פירוט והערות": "הנחות אפשריות בתשלומי ארנונה או מים.",
-            "סכום משוער (ש״ componente": "לא כספי",
+            "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
@@ -471,7 +471,8 @@ st.markdown("""
         /* Table Styling */
         .stTable, .dataframe {
             font-size: 1.0em;
-            text-align: right; /* Align table content to the right */
+            /* text-align: right; -- This is already applied by rtl direction.
+               Individual cell alignment needs to be specific. */
         }
         .stTable thead th, .dataframe thead th {
             text-align: right; /* Align table headers to the right */
@@ -539,13 +540,29 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# Initialize session state variables if not already present
+# Initialize all session state variables at the very top for robustness
 if 'app_mode' not in st.session_state:
-    st.session_state.app_mode = 'landing_page' # Start with landing page
+    st.session_state.app_mode = 'landing_page'
 if 'results_calculated' not in st.session_state:
     st.session_state.results_calculated = False
 if 'selected_tab_index' not in st.session_state:
     st.session_state.selected_tab_index = 0 # Default to the first tab (Input Data)
+# Initialize variables used in display that are set after calculation
+if 'daily_salary_compensation_val' not in st.session_state:
+    st.session_state.daily_salary_compensation_val = 0.0
+if 'total_monetary_benefits_immediate' not in st.session_state:
+    st.session_state.total_monetary_benefits_immediate = 0.0
+if 'total_monetary_benefits_future' not in st.session_state:
+    st.session_state.total_monetary_benefits_future = 0.0
+if 'monetary_breakdown_for_chart' not in st.session_state:
+    st.session_state.monetary_breakdown_for_chart = []
+if 'avg_salary_display' not in st.session_state:
+    st.session_state.avg_salary_display = 0
+if 'reserve_days_display' not in st.session_state:
+    st.session_state.reserve_days_display = 0
+if 'entitlements' not in st.session_state:
+    st.session_state.entitlements = []
+
 
 # Conditional rendering based on app_mode
 if st.session_state.app_mode == 'landing_page':
@@ -698,9 +715,10 @@ elif st.session_state.app_mode == 'main_app':
                 is_holiday_period_str # Pass the new input
             )
             st.session_state.results_calculated = True
-            # To automatically switch tabs, the Streamlit version must support `default_index`
-            # in st.tabs(). If not, the user will have to manually switch.
-            # st.session_state.selected_tab_index = 1 # This line is commented out to prevent errors if not supported
+            st.session_state.avg_salary_display = avg_salary
+            st.session_state.reserve_days_display = reserve_days
+            # Setting the tab index to switch to the Summary tab - ONLY WORKS WITH UPDATED STREAMLIT
+            st.session_state.selected_tab_index = 1
             st.rerun() # Trigger a rerun to update the displayed content
 
         add_footer() # Add footer to Input Data tab as well
@@ -711,12 +729,12 @@ elif st.session_state.app_mode == 'main_app':
             st.markdown('<h2 class="subheader">סיכום הטבות וחישובים</h2>', unsafe_allow_html=True)
 
             daily_salary_value = 0
-            if st.session_state.avg_salary_display > 0:
+            if st.session_state.avg_salary_display > 0: # This is now safely initialized
                 daily_salary_value = st.session_state.avg_salary_display / 30
 
             total_monetary_all_benefits = st.session_state.daily_salary_compensation_val + st.session_state.total_monetary_benefits_immediate + st.session_state.total_monetary_benefits_future
             daily_value_with_benefits = 0
-            if st.session_state.reserve_days_display > 0:
+            if st.session_state.reserve_days_display > 0: # This is now safely initialized
                 daily_value_with_benefits = total_monetary_all_benefits / st.session_state.reserve_days_display
 
             col3, col4 = st.columns(2)
