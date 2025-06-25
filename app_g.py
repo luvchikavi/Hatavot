@@ -474,7 +474,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # Main header with "טיל" styling
 st.markdown('<h1 class="main-header">מחשבון הטבות ושווי יום מילואים</h1>', unsafe_allow_html=True)
-st.markdown('<p class="app-subtitle">כלי עזר לחיילי מילואים להערכת הטבות וחישוב שווי יום שירות.</p>', unsafe_allow_html=True)
+st.markdown('<p class="app-subtitle">כלי עזר לחיילי מילואים להערכת הטבות וחישוב שווי יום שירות</p>', unsafe_allow_html=True)
 st.markdown("---")
 
 # Initialize session state variables if not already present
