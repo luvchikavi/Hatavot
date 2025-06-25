@@ -347,12 +347,19 @@ st.markdown("""
             to { opacity: 1; transform: translateX(0); }
         }
 
-        .developed-by-logo-placeholder {
-            /* This div is a placeholder for where the logo might go */
-            text-align: right;
-            margin-bottom: 20px;
-            /* Add styling for the image itself if needed, e.g., max-width */
+        .developed-by-logo-container {
+            text-align: left; /* Align the logo to the left */
+            position: absolute; /* Position absolutely */
+            top: 20px; /* Distance from top */
+            left: 20px; /* Distance from left */
+            z-index: 1000; /* Ensure it's above other content */
         }
+        .developed-by-logo-container img {
+            max-width: 180px; /* Adjust logo size as needed */
+            height: auto;
+            display: block; /* Ensures it takes up its own line */
+        }
+
 
         .subheader {
             font-size: 1.8em;
@@ -457,12 +464,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Placeholder for logo (local paths cannot be accessed directly by web apps)
-st.markdown('<div class="developed-by-logo-placeholder"></div>', unsafe_allow_html=True)
-# If you host your logo online, you can use:
-# st.image("URL_TO_YOUR_LOGO.png", width=150)
-# Example placeholder if you want to see an image:
-# st.image("https://placehold.co/150x50/aabbcc/ffffff?text=Drishti+Logo", width=150)
+# Logo placeholder - User needs to host their logo online and provide the URL here
+st.markdown('<div class="developed-by-logo-container">', unsafe_allow_html=True)
+# Replace "YOUR_GITHUB_RAW_LOGO_URL_HERE" with the actual raw URL from GitHub
+# Example: st.image("https://raw.githubusercontent.com/your-username/your-repo-name/main/D_logo.png", width=180)
+st.image("https://placehold.co/180x60/d1d1d1/000000?text=Drishti+Logo", caption="Drishti Consulting Logo Placeholder", use_column_width=False)
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 # Main header with "טיל" styling
@@ -586,8 +593,7 @@ with tab1:
             camps_cost, is_tzav_8, mortgage_rent_cost_input, needs_dedicated_medical_assistance, needs_preferred_loans
         )
         st.session_state.results_calculated = True
-        # Setting the tab index to switch to the Summary tab
-        st.session_state.selected_tab_index = 1
+        st.session_state.selected_tab_index = 1 # Switch to the Summary tab
         st.session_state.avg_salary_display = avg_salary
         st.session_state.reserve_days_display = reserve_days
         st.rerun() # Trigger a rerun to update the displayed tab
