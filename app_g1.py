@@ -2,10 +2,12 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px # Import plotly for the pie chart
-# from datetime import date # No longer needed for date inputs, but kept for general context if other date ops were relevant
+from datetime import date # Import date for date inputs (kept for type hinting, not used for input)
 
 # הגדרת קבועים עבור סכומי ההטבות (יש לעדכן מספרים אלה על פי הנתונים הרשמיים העדכניים)
 # Constants for benefit amounts (these should be updated with official, current figures)
+# הערה: נתונים אלו הם הערכה בלבד ויש לוודא אותם מול מקורות רשמיים.
+# Note: These figures are estimates only and should be verified against official sources.
 ANNUAL_GRANT_PER_DAY_THRESHOLD = 32  # סף ימים למענק שנתי
 ANNUAL_GRANT_AMOUNT_THRESHOLD_1 = 1200 # סכום מענק ראשון
 ANNUAL_GRANT_AMOUNT_THRESHOLD_2 = 2500 # סכום מענק שני
@@ -20,9 +22,11 @@ BABYSITTER_MAX_REAR = 2000  # מקסימום בייביסיטר לעורף
 
 DOG_BOARDING_MAX = 500  # מקסימום פנסיון כלבים
 
-THERAPY_MAX_LOW_DAYS = 1500  # מקסימום טיפול רגשי - סכום נמוך יותר
-THERAPY_MAX_HIGH_DAYS = 2500  # מקסימום טיפול רגשי - סכום גבוה יותר (לרוב לוחמים ו/או מעל ימי שירות מסוימים)
-THERAPY_DAYS_THRESHOLD = 20 # ימי שירות לטיפול רגשי בסכום גבוה
+# עבור טיפולים פסיכולוגיים - יש לוודא תנאים וסכומים מדויקים
+# For psychological treatments - precise conditions and amounts need verification
+THERAPY_MAX_LOW_DAYS = 1500  # מקסימום טיפול רגשי - סכום נמוך יותר (הערכה)
+THERAPY_MAX_HIGH_DAYS = 2500  # מקסימום טיפול רגשי - סכום גבוה יותר (הערכה, לרוב ללוחמים ו/או מעל ימי שירות מסוימים)
+THERAPY_DAYS_THRESHOLD = 20 # ימי שירות לטיפול רגשי בסכום גבוה (הערכה)
 
 TUITION_PERCENT_COMBATANT = 1.0  # 100% החזר שכר לימוד ללוחמים
 TUITION_DAYS_THRESHOLD = 20 # ימי שירות להחזר שכר לימוד
@@ -48,18 +52,24 @@ def calculate_benefits(
     # Convert string boolean to actual boolean
     is_holiday_period = (is_holiday_period_str == "כן")
 
+    # 1. תגמול ביטוח לאומי (Payment for reserve days based on average salary)
+    # הערה: יש לוודא אם החישוב הוא לפי ברוטו או נטו, ולעדכן את ההנחיה למשתמש בהתאם.
+    # Note: It needs to be verified if the calculation is based on gross or net, and update user instructions accordingly.
     daily_salary_compensation = 0
     if avg_salary > 0 and reserve_days > 0:
-        daily_salary_compensation = (avg_salary / 30) * reserve_days
+        daily_salary_compensation = (avg_salary / 30) * reserve_days # assuming avg_salary is monthly
         entitlements.append({
             "קטגוריה": "תשלום שכר",
             "הטבה / תגמול": "תגמול ביטוח לאומי",
-            "פירוט והערות": f"תשלום עבור {reserve_days} ימי מילואים לפי ממוצע שכר.",
+            "פירוט והערות": f"תשלום עבור {reserve_days} ימי מילואים לפי ממוצע שכר חודשי ({avg_salary:,.0f} ש\"ח).",
             "סכום משוער (ש״ח)": daily_salary_compensation,
             "סוג תשלום": "מיידי"
         })
         total_monetary_benefits_immediate += daily_salary_compensation
 
+    # 2. מענק שנתי (Annual Grant) - Future payment
+    # הערה: יש לוודא סכומים וספי ימים מדויקים למענק שנתי.
+    # Note: Precise amounts and day thresholds for the annual grant need verification.
     annual_grant = 0
     if reserve_days >= ANNUAL_GRANT_PER_DAY_THRESHOLD:
         if reserve_days >= 200:
@@ -80,6 +90,7 @@ def calculate_benefits(
         total_monetary_benefits_future += annual_grant
         monetary_breakdown_for_chart.append({"name": "מענק שנתי", "value": annual_grant})
 
+    # 3. מענק משפחה מוגדלת (Increased Family Grant)
     family_grant = 0
     if is_married and reserve_days > 30 and num_children > 0:
         additional_days = reserve_days - 30
@@ -95,6 +106,7 @@ def calculate_benefits(
             total_monetary_benefits_immediate += family_grant
             monetary_breakdown_for_chart.append({"name": "מענק משפחה מוגדלת", "value": family_grant})
 
+    # 4. מענק הוצאות אישיות מוגדל (Increased Personal Expenses Grant)
     personal_expenses_grant = 0
     if reserve_days > 0:
         personal_expenses_grant = (reserve_days // 10) * PERSONAL_EXPENSES_GRANT_PER_10_DAYS
@@ -109,6 +121,7 @@ def calculate_benefits(
             total_monetary_benefits_immediate += personal_expenses_grant
             monetary_breakdown_for_chart.append({"name": "מענק הוצאות אישיות מוגדל", "value": personal_expenses_grant})
 
+    # 5. החזר כביש 6 (Road 6 Refund)
     road_6_refund = 0
     if used_road_6 and road_6_cost > 0:
         road_6_refund = min(road_6_cost, ROAD_6_MAX_REFUND)
@@ -122,6 +135,7 @@ def calculate_benefits(
         total_monetary_benefits_immediate += road_6_refund
         monetary_breakdown_for_chart.append({"name": "החזר כביש 6", "value": road_6_refund})
 
+    # 6. בייביסיטר (Babysitter)
     babysitter_refund = 0
     if num_children > 0 and babysitter_cost > 0:
         max_babysitter_refund = BABYSITTER_MAX_COMBATANT if unit_type == "לוחם" else BABYSITTER_MAX_REAR
@@ -136,6 +150,7 @@ def calculate_benefits(
         total_monetary_benefits_immediate += babysitter_refund
         monetary_breakdown_for_chart.append({"name": "בייביסיטר", "value": babysitter_refund})
 
+    # 7. פנסיון כלבים (Dog Boarding)
     dog_boarding_refund = 0
     if dog_boarding_cost > 0:
         dog_boarding_refund = min(dog_boarding_cost, DOG_BOARDING_MAX)
@@ -149,6 +164,7 @@ def calculate_benefits(
         total_monetary_benefits_immediate += dog_boarding_refund
         monetary_breakdown_for_chart.append({"name": "פנסיון כלבים", "value": dog_boarding_refund})
 
+    # 8. ביטול חופשה וטיסה (Cancellation of Vacation/Flight)
     vacation_cancel_refund = 0
     if vacation_cancel_cost > 0:
         vacation_cancel_refund = vacation_cancel_cost
@@ -162,6 +178,9 @@ def calculate_benefits(
         total_monetary_benefits_immediate += vacation_cancel_refund
         monetary_breakdown_for_chart.append({"name": "ביטול חופשה וטיסה", "value": vacation_cancel_refund})
 
+    # 9. טיפול רגשי ונפשי (Emotional and Psychological Treatment)
+    # הערה: יש לוודא תנאים וסכומים מדויקים לטיפולים שונים (אישי, זוגי).
+    # Note: Precise conditions and amounts for various treatments (individual, couple) need verification.
     therapy_refund = 0
     if therapy_cost > 0:
         max_therapy_refund = THERAPY_MAX_HIGH_DAYS if (unit_type == "לוחם" and reserve_days >= THERAPY_DAYS_THRESHOLD) else THERAPY_MAX_LOW_DAYS
@@ -169,13 +188,14 @@ def calculate_benefits(
         entitlements.append({
             "קטגוריה": "טיפול רגשי ונפשי",
             "הטבה / תגמול": "טיפול אישי וזוגי",
-            "פירוט והערות": f"החזר עד {max_therapy_refund} ש\"ח, תלוי בימי השירות ובסוג היחידה.",
+            "פירוט והערות": f"החזר עד {max_therapy_refund} ש\"ח, תלוי בימי השירות ובסוג היחידה. יש לוודא ספציפית לטיפול אישי/זוגי.",
             "סכום משוער (ש״ח)": therapy_refund,
             "סוג תשלום": "מיידי"
         })
         total_monetary_benefits_immediate += therapy_refund
         monetary_breakdown_for_chart.append({"name": "טיפול רגשי ונפשי", "value": therapy_refund})
 
+    # 10. החזר שכר לימוד לסטודנטים (Tuition Fee Refund for Students)
     tuition_refund = 0
     if is_student and tuition_cost > 0 and unit_type == "לוחם" and reserve_days >= TUITION_DAYS_THRESHOLD:
         tuition_refund = tuition_cost * TUITION_PERCENT_COMBATANT
@@ -189,6 +209,11 @@ def calculate_benefits(
         total_monetary_benefits_immediate += tuition_refund
         monetary_breakdown_for_chart.append({"name": "החזר שכר לימוד", "value": tuition_refund})
 
+    # 11. השתתפות בקייטנות (Participation in Summer Camps)
+    # הערה: נתון 'is_holiday_period' אינו משפיע ישירות על סכום הקייטנות, אלא על זכאות כללית.
+    # יש לוודא אם קיימת הטבה כספית ישירה על סמך תקופת חג/קיץ ללא קשר להוצאה ספציפית.
+    # Note: 'is_holiday_period' does not directly affect camp refund amount, only general eligibility.
+    # Verify if a direct monetary benefit exists based on holiday/summer period regardless of specific expense.
     camps_refund = 0
     if num_children > 0 and camps_cost > 0 and unit_type == "לוחם":
         camps_refund = min(camps_cost, CAMPS_MAX_COMBATANT_FAMILY)
@@ -246,38 +271,45 @@ def calculate_benefits(
 
 
     if reserve_days >= 10:
+        # Fixed SyntaxError: invalid syntax by ensuring consistent key formatting
         entitlements.append({
-            "קטגוריה": "הטבה / תגמול": "הנחות באגרות רישוי",
+            "קטגוריה": "הטבות כלליות",
+            "הטבה / תגמול": "הנחות באגרות רישוי",
             "פירוט והערות": "הנחות אפשריות באגרות רישוי רכב.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבה / תגמול": "הטבות בתחבורה ציבורית",
+            "קטגוריה": "הטבות כלליות",
+            "הטבה / תגמול": "הטבות בתחבורה ציבורית",
             "פירוט והערות": "הטבות בשימוש בתחבורה ציבורית.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבה / תגמול": "הטבות בביטוחי בריאות משלימים",
+            "קטגוריה": "הטבות כלליות",
+            "הטבה / תגמול": "הטבות בביטוחי בריאות משלימים",
             "פירוט והערות": "הנחות או הטבות בהצטרפות לביטוחי בריאות משלימים.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבה / תגמול": "הטבות בארנונה / מים (רשות מקומית)",
+            "קטגוריה": "הטבות כלליות",
+            "הטבה / תגמול": "הטבות בארנונה / מים (רשות מקומית)",
             "פירוט והערות": "הנחות אפשריות בתשלומי ארנונה או מים.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבה / תגמול": "הטבות במוסדות תרבות ופנאי",
+            "קטגוריה": "הטבות כלליות",
+            "הטבה / תגמול": "הטבות במוסדות תרבות ופנאי",
             "פירוט והערות": "הנחות או כניסה חינם למוזיאונים, תיאטראות וכדומה.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבה / תגמול": "הטבות בנופש ואירוח",
+            "קטגוריה": "הטבות כלליות",
+            "הטבה / תגמול": "הטבות בנופש ואירוח",
             "פירוט והערות": "הנחות בבתי מלון, צימרים או אתרי נופש.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
@@ -301,6 +333,21 @@ def calculate_benefits(
             "סוג תשלום": "הטבה"
         })
 
+    # הטבת נקודות מס 2026 - יש לוודא תנאים וסכומים מדויקים
+    # Tax point benefit 2026 - precise conditions and amounts need verification
+    # if reserve_days >= SOME_THRESHOLD_FOR_TAX_POINTS:
+    #     tax_point_value = CALCULATE_TAX_POINT_VALUE() # Needs implementation
+    #     entitlements.append({
+    #         "קטגוריה": "הטבות מס",
+    #         "הטבה / תגמול": "נקודות מס 2026",
+    #         "פירוט והערות": "הטבת נקודות מס החל מ-2026. יש לוודא זכאות ושווי.",
+    #         "סכום משוער (ש״ח)": tax_point_value,
+    #         "סוג תשלום": "עתידי"
+    #     })
+    #     total_monetary_benefits_future += tax_point_value
+    #     monetary_breakdown_for_chart.append({"name": "נקודות מס 2026", "value": tax_point_value})
+
+
     return entitlements, daily_salary_compensation, total_monetary_benefits_immediate, total_monetary_benefits_future, monetary_breakdown_for_chart
 
 # ==================== FOOTER ====================
@@ -317,13 +364,17 @@ st.markdown("""
         /* General styling for the page */
         html, body, [data-testid="stAppViewContainer"] {
             background-color: #f0f2f6; /* Light gray background */
+            direction: rtl; /* Set direction to right-to-left for Hebrew */
+            text-align: right; /* Align text to the right by default */
         }
-
-        /* Main Header Styling */
+        /* Ensure specific elements like headers and buttons remain right-aligned or centered if desired */
+        .main-header, .app-subtitle, .subheader, .metric-card h3, .metric-card p {
+            text-align: right; /* Override default Streamlit centering if needed for specific elements */
+        }
         .main-header {
             font-size: 3.5em;
-            color: black; /* Changed to black */
-            text-align: center;
+            color: black;
+            text-align: center; /* Center as requested for the main title */
             margin-bottom: 10px;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
@@ -334,11 +385,10 @@ st.markdown("""
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* Subtitle Styling */
         .app-subtitle {
             font-size: 1.5em;
-            color: #333; /* Darker color (almost black) */
-            text-align: right;
+            color: #333;
+            text-align: center; /* Center as requested for the subtitle */
             margin-top: -10px;
             margin-bottom: 20px;
             font-weight: bold;
@@ -366,11 +416,12 @@ st.markdown("""
         /* Subheader Styling */
         .subheader {
             font-size: 1.8em;
-            color: #333; /* Changed to black */
+            color: #333;
             margin-top: 15px;
             margin-bottom: 10px;
             border-bottom: 2px solid #E0F2F1;
             padding-bottom: 5px;
+            text-align: right; /* Ensure subheaders are right-aligned */
         }
 
         /* Button Styling */
@@ -383,6 +434,10 @@ st.markdown("""
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            display: block; /* Make button block to control alignment with text-align */
+            margin-left: auto; /* Push to right */
+            margin-right: auto; /* Push to right */
+            text-align: center; /* Center text within button */
         }
         .stButton>button:hover {
             background-color: #004D40;
@@ -393,27 +448,33 @@ st.markdown("""
         .stTextInput > div > div > input,
         .stNumberInput > div > div > input,
         .stSelectbox > div > div > div[data-baseweb="select"] {
-            border: 1px solid #B2DFDB; /* Subtle border */
-            border-radius: 12px; /* More rounded */
-            padding: 12px 18px; /* Increased padding */
-            background-color: #F0FBF9; /* Very light background, slightly off-white */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Very soft shadow */
+            border: 1px solid #B2DFDB;
+            border-radius: 12px;
+            padding: 12px 18px;
+            background-color: #F0FBF9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: all 0.3s ease-in-out;
             font-size: 1em;
+            text-align: right; /* Align input text to the right */
         }
         /* Focus state for input fields */
         .stTextInput > div > div > input:focus,
         .stNumberInput > div > div > input:focus,
         .stSelectbox > div > div > div[data-baseweb="select"]:focus-within {
             outline: none;
-            border-color: #00796B; /* Highlight border on focus */
-            box-shadow: 0 0 0 3px rgba(0,121,107,0.2); /* Soft blue glow on focus */
+            border-color: #00796B;
+            box-shadow: 0 0 0 3px rgba(0,121,107,0.2);
         }
 
         /* Table Styling */
         .stTable, .dataframe {
             font-size: 1.0em;
+            text-align: right; /* Align table content to the right */
         }
+        .stTable thead th, .dataframe thead th {
+            text-align: right; /* Align table headers to the right */
+        }
+
 
         /* Metric Card Styling */
         .metric-card {
@@ -441,18 +502,19 @@ st.markdown("""
 
         /* Tab text styling - normal Streamlit appearance */
         .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-            font-size: 1em; /* Standard font size */
-            font-weight: normal; /* No bold */
-            color: black; /* Default black for normal text */
+            font-size: 1.1em;
+            font-weight: normal;
+            color: black;
             padding: 8px 15px;
             transition: color 0.3s ease;
+            text-align: center; /* Center tab names for better appearance */
         }
         .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {
-            color: black; /* Black for active tab */
-            border-bottom: 2px solid black; /* Subtle black border for active */
+            color: black;
+            border-bottom: 2px solid black;
         }
         .stTabs [data-baseweb="tab-list"] button:hover [data-testid="stMarkdownContainer"] p {
-            color: #555; /* Slight hover effect */
+            color: #555;
         }
 
         /* Footer Styling */
@@ -463,6 +525,7 @@ st.markdown("""
             color: #555;
             font-size: 1em;
             border-top: 1px solid #ddd;
+            direction: ltr; /* Ensure footer text is LTR if containing English */
         }
     </style>
 """, unsafe_allow_html=True)
