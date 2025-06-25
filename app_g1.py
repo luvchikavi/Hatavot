@@ -585,8 +585,10 @@ elif st.session_state.app_mode == 'main_app':
 
     # Create tabs with English names
     tab_names = ["Input Data", "Summary"]
-    # Using default_index based on session state to control active tab
-    tab1, tab2 = st.tabs(tab_names, default_index=st.session_state.selected_tab_index)
+    # Removed 'default_index' to prevent TypeError on older Streamlit versions.
+    # The tab switching now relies purely on session_state.selected_tab_index being set
+    # and a subsequent st.rerun().
+    tab1, tab2 = st.tabs(tab_names)
 
 
     with tab1:
