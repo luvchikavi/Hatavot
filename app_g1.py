@@ -254,36 +254,31 @@ def calculate_benefits(
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות בתחבורה ציבורית",
+            "קטגוריה": "הטבה / תגמול": "הטבות בתחבורה ציבורית",
             "פירוט והערות": "הטבות בשימוש בתחבורה ציבורית.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות בביטוחי בריאות משלימים",
+            "קטגוריה": "הטבה / תגמול": "הטבות בביטוחי בריאות משלימים",
             "פירוט והערות": "הנחות או הטבות בהצטרפות לביטוחי בריאות משלימים.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות בארנונה / מים (רשות מקומית)",
+            "קטגוריה": "הטבה / תגמול": "הטבות בארנונה / מים (רשות מקומית)",
             "פירוט והערות": "הנחות אפשריות בתשלומי ארנונה או מים.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות במוסדות תרבות ופנאי",
+            "קטגוריה": "הטבה / תגמול": "הטבות במוסדות תרבות ופנאי",
             "פירוט והערות": "הנחות או כניסה חינם למוזיאונים, תיאטראות וכדומה.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
-            "קטגוריה": "הטבות כלליות",
-            "הטבה / תגמול": "הטבות בנופש ואירוח",
+            "קטגוריה": "הטבה / תגמול": "הטבות בנופש ואירוח",
             "פירוט והערות": "הנחות בבתי מלון, צימרים או אתרי נופש.",
             "סכום משוער (ש״ח)": "לא כספי",
             "סוג תשלום": "הטבה"
@@ -320,39 +315,56 @@ st.set_page_config(layout="wide", page_title="מחשבון הטבות ושווי
 
 st.markdown("""
     <style>
-        /* General styles for headers */
+        /* General styling for the page */
+        html, body, [data-testid="stAppViewContainer"] {
+            background-color: #f0f2f6; /* Light gray background */
+        }
+
+        /* Main Header Styling */
         .main-header {
-            font-size: 3.5em; /* Increased size */
+            font-size: 3.5em;
             color: black; /* Changed to black */
-            text-align: center; /* Center for more impact */
-            margin-bottom: 10px; /* Reduced margin */
+            text-align: center;
+            margin-bottom: 10px;
             font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Softer shadow */
-            -webkit-background-clip: unset; /* Remove gradient effect */
-            -webkit-text-fill-color: initial; /* Reset text fill color */
-            animation: fadeInScale 1s ease-out; /* Simple animation */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            animation: fadeInScale 1s ease-out;
         }
         @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
 
+        /* Subtitle Styling */
         .app-subtitle {
-            font-size: 1.5em; /* Larger */
+            font-size: 1.5em;
             color: #333; /* Darker color (almost black) */
-            text-align: right; /* Aligned right as requested */
-            margin-top: -10px; /* Pull closer to title */
+            text-align: right;
+            margin-top: -10px;
             margin-bottom: 20px;
-            font-weight: bold; /* Bold */
-            animation: slideInRight 0.8s ease-out; /* Animation */
+            font-weight: bold;
+            animation: slideInRight 0.8s ease-out;
         }
         @keyframes slideInRight {
             from { opacity: 0; transform: translateX(20px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Removed .developed-by-logo-container styling entirely */
+        /* Logo Container Styling (for positioning) */
+        .logo-container {
+            text-align: left; /* Align the logo to the left */
+            position: absolute; /* Position absolutely */
+            top: 20px; /* Distance from top */
+            left: 20px; /* Distance from left */
+            z-index: 1000; /* Ensure it's above other content */
+        }
+        .logo-container img {
+            max-width: 180px; /* Adjust logo size as needed */
+            height: auto;
+            display: block; /* Ensures it takes up its own line */
+        }
 
+        /* Subheader Styling */
         .subheader {
             font-size: 1.8em;
             color: #333; /* Changed to black */
@@ -362,7 +374,7 @@ st.markdown("""
             padding-bottom: 5px;
         }
 
-        /* Button styling */
+        /* Button Styling */
         .stButton>button {
             background-color: #00796B;
             color: white;
@@ -375,20 +387,20 @@ st.markdown("""
         }
         .stButton>button:hover {
             background-color: #004D40;
-            transform: translateY(-2px); /* Lift effect */
+            transform: translateY(-2px);
         }
 
-        /* Input field styling (for a softer, less "boxy" look) */
+        /* Input Field Styling (for a softer, less "boxy" look) */
         .stTextInput > div > div > input,
         .stNumberInput > div > div > input,
-        .stSelectbox > div > div > div[data-baseweb="select"] { /* Specific target for selectbox */
+        .stSelectbox > div > div > div[data-baseweb="select"] {
             border: 1px solid #B2DFDB; /* Subtle border */
             border-radius: 12px; /* More rounded */
             padding: 12px 18px; /* Increased padding */
             background-color: #F0FBF9; /* Very light background, slightly off-white */
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Very soft shadow */
             transition: all 0.3s ease-in-out;
-            font-size: 1em; /* Ensure text is readable */
+            font-size: 1em;
         }
         /* Focus state for input fields */
         .stTextInput > div > div > input:focus,
@@ -399,12 +411,12 @@ st.markdown("""
             box-shadow: 0 0 0 3px rgba(0,121,107,0.2); /* Soft blue glow on focus */
         }
 
-        /* Table styling */
+        /* Table Styling */
         .stTable, .dataframe {
             font-size: 1.0em;
         }
 
-        /* Metric card styling */
+        /* Metric Card Styling */
         .metric-card {
             background-color: #E0F2F1;
             padding: 15px;
@@ -430,7 +442,7 @@ st.markdown("""
 
         /* Tab text styling - simplified as requested */
         .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-            font-size: 1.1em; /* Smaller font for tab names */
+            font-size: 1.1em; /* Normal font size for tab names */
             font-weight: normal; /* No bold */
             color: #333; /* Black/dark grey */
             padding: 8px 15px;
@@ -444,7 +456,7 @@ st.markdown("""
             color: #555; /* Slight hover effect */
         }
 
-        /* Footer styling */
+        /* Footer Styling */
         .footer {
             text-align: center;
             padding: 20px;
@@ -457,206 +469,237 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# Main header with "טיל" styling
-st.markdown('<h1 class="main-header">מחשבון הטבות ושווי יום מילואים</h1>', unsafe_allow_html=True)
-st.markdown('<p class="app-subtitle">כלי עזר לחיילי מילואים להערכת הטבות וחישוב שווי יום שירות</p>', unsafe_allow_html=True)
-st.markdown("---")
-
 # Initialize session state variables if not already present
+if 'app_mode' not in st.session_state:
+    st.session_state.app_mode = 'landing_page' # Start with landing page
 if 'results_calculated' not in st.session_state:
     st.session_state.results_calculated = False
-    st.session_state.entitlements = []
-    st.session_state.daily_salary_compensation_val = 0
-    st.session_state.total_monetary_benefits_immediate = 0
-    st.session_state.total_monetary_benefits_future = 0
-    st.session_state.monetary_breakdown_for_chart = []
-    st.session_state.avg_salary_display = 0
-    st.session_state.reserve_days_display = 0
+if 'selected_tab_index' not in st.session_state:
     st.session_state.selected_tab_index = 0 # Default to the first tab (Input Data)
 
-# Create tabs with English names
-tab_names = ["Input Data", "Summary"]
-# Removed the 'key' argument and 'default_index' argument to avoid TypeError for older Streamlit versions.
-# The tab selection will now rely on the button logic setting session_state.selected_tab_index and st.rerun().
-tab1, tab2 = st.tabs(tab_names)
+# Conditional rendering based on app_mode
+if st.session_state.app_mode == 'landing_page':
+    # Logo container for landing page
+    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+    # Replace "YOUR_GITHUB_RAW_LOGO_URL_HERE" with the actual raw URL from GitHub
+    st.image("https://raw.githubusercontent.com/aviluvchik/Miluim_Benefits_App/main/D_logo.png", width=180, caption="Drishti Consulting Logo", use_column_width=False)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-
-with tab1:
-    st.markdown('<h2 class="subheader">פרטים אישיים ונתוני שירות</h2>', unsafe_allow_html=True)
-
-    col1_input, col2_input = st.columns(2)
-
-    with col1_input:
-        st.markdown("### נתוני שכר ושירות")
-        avg_salary = st.number_input("שכר ממוצע ב-3 חודשים אחרונים (נטו, בשקלים):", min_value=0, value=10000, step=100, key="avg_salary_input")
-        reserve_days = st.number_input("מספר ימי מילואים ששירתו השנה:", min_value=0, value=30, step=1, key="reserve_days_input")
-        unit_type = st.selectbox("סוג יחידה:", ["לוחם", "עורף"], key="unit_type_select")
-
-        # Replaced date inputs with a single selectbox for holiday periods
-        st.markdown("### תקופת שירות מילואים")
-        is_holiday_period_str = st.selectbox(
-            "האם המילואים היו בתקופה של קייטנות קיץ/פסח/חגי תשרי?",
-            ["לא", "כן"],
-            key="is_holiday_period_select"
-        )
-
-
-    with col2_input:
-        st.markdown("### פרטים משפחתיים וסטטוס")
-        is_married_str = st.selectbox("האם נשואים?", ["לא", "כן"], key="is_married_select")
-        is_married = (is_married_str == "כן")
-        num_children = st.number_input("מספר ילדים (מתחת לגיל 18):", min_value=0, value=0, step=1, key="num_children_input")
-        has_non_working_spouse_str = st.selectbox("האם בן/בת הזוג לא עובד/ת?", ["לא", "כן"], key="has_non_working_spouse_select")
-        has_non_working_spouse = (has_non_working_spouse_str == "כן")
-        is_student_str = st.selectbox("האם סטודנט/ית?", ["לא", "כן"], key="is_student_select")
-        is_student = (is_student_str == "כן")
-        is_tzav_8_str = st.selectbox("האם שירתו בצו 8 השנה?", ["לא", "כן"], key="is_tzav_8_select")
-        is_tzav_8 = (is_tzav_8_str == "כן")
-
-
-    st.markdown('<h2 class="subheader">הוצאות נלוות</h2>', unsafe_allow_html=True)
-
-    road_6_cost_enabled_str = st.selectbox("האם השתמשו בכביש 6?", ["לא", "כן"], key="road_6_enabled_select")
-    road_6_cost_enabled = (road_6_cost_enabled_str == "כן")
-    road_6_cost = 0
-    if road_6_cost_enabled:
-        road_6_cost = st.number_input("עלות שימוש בכביש 6 לחודש (בשקלים):", min_value=0, value=0, step=10, key="road_6_cost_input")
-
-    babysitter_cost_enabled_str = st.selectbox("האם שילמו על בייביסיטר?", ["לא", "כן"], key="babysitter_enabled_select")
-    babysitter_cost_enabled = (babysitter_cost_enabled_str == "כן")
-    babysitter_cost = 0
-    if babysitter_cost_enabled:
-        babysitter_cost = st.number_input("עלות בייביסיטר לחודש (בשקלים):", min_value=0, value=0, step=50, key="babysitter_cost_input")
-
-    dog_boarding_cost_enabled_str = st.selectbox("האם שילמו על פנסיון כלבים?", ["לא", "כן"], key="dog_boarding_enabled_select")
-    dog_boarding_cost_enabled = (dog_boarding_cost_enabled_str == "כן")
-    dog_boarding_cost = 0
-    if dog_boarding_cost_enabled:
-        dog_boarding_cost = st.number_input("עלות פנסיון כלבים (בשקלים):", min_value=0, value=0, step=50, key="dog_boarding_cost_input")
-
-    vacation_cancel_cost_enabled_str = st.selectbox("האם נאלצו לבטל חופשה/טיסה עקב שירות מילואים?", ["לא", "כן"], key="vacation_cancel_enabled_select")
-    vacation_cancel_cost_enabled = (vacation_cancel_cost_enabled_str == "כן")
-    vacation_cancel_cost = 0
-    if vacation_cancel_cost_enabled:
-        vacation_cancel_cost = st.number_input("עלות ביטול חופשה/טיסה (בשקלים, סכום הפיצוי המגיע):", min_value=0, value=0, step=100, key="vacation_cancel_cost_input")
-
-    therapy_cost_enabled_str = st.selectbox("האם שילמו על טיפול רגשי/נפשי?", ["לא", "כן"], key="therapy_enabled_select")
-    therapy_cost_enabled = (therapy_cost_enabled_str == "כן")
-    therapy_cost = 0
-    if therapy_cost_enabled:
-        therapy_cost = st.number_input("עלות טיפול רגשי/נפשי (בשקלים):", min_value=0, value=0, step=50, key="therapy_cost_input")
-
-    camps_cost_enabled_str = st.selectbox("האם שילמו על קייטנות לילדים?", ["לא", "כן"], key="camps_enabled_select")
-    camps_cost_enabled = (camps_cost_enabled_str == "כן")
-    camps_cost = 0
-    if camps_cost_enabled:
-        camps_cost = st.number_input("עלות קייטנות (בשקלים, לשנה):", min_value=0, value=0, step=50, key="camps_cost_input")
-
-    tuition_cost_enabled_str = st.selectbox("האם שילמו על שכר לימוד (לסטודנטים)?", ["לא", "כן"], key="tuition_enabled_select")
-    tuition_cost_enabled = (tuition_cost_enabled_str == "כן")
-    tuition_cost = 0
-    if tuition_cost_enabled:
-        tuition_cost = st.number_input("עלות שכר לימוד שנתית (בשקלים):", min_value=0, value=0, step=100, key="tuition_cost_input")
-
-    mortgage_rent_cost_enabled_str = st.selectbox("האם זקוקים/קיבלו סיוע בשכר דירה/משכנתא?", ["לא", "כן"], key='mortgage_rent_checkbox_input')
-    mortgage_rent_cost_enabled = (mortgage_rent_cost_enabled_str == "כן")
-    mortgage_rent_cost_input = 0
-    if mortgage_rent_cost_enabled:
-        mortgage_rent_cost_input = st.number_input("סכום סיוע בשכר דירה/משכנתא (בשקלים):", min_value=0, value=0, step=50, key='mortgage_rent_input_field')
-
-    needs_dedicated_medical_assistance_str = st.selectbox("האם יש צורך בסיוע רפואי ייעודי עקב פציעה/מחלה הקשורה לשירות?", ["לא", "כן"], key="dedicated_medical_select")
-    needs_dedicated_medical_assistance = (needs_dedicated_medical_assistance_str == "כן")
-    needs_preferred_loans_str = st.selectbox("האם מעוניינים לבדוק זכאות להלוואות בתנאים מועדפים?", ["לא", "כן"], key="preferred_loans_select")
-    needs_preferred_loans = (needs_preferred_loans_str == "כן")
-
-    if st.button("חשב הטבות", key="calculate_button"):
-        st.session_state.entitlements, \
-        st.session_state.daily_salary_compensation_val, \
-        st.session_state.total_monetary_benefits_immediate, \
-        st.session_state.total_monetary_benefits_future, \
-        st.session_state.monetary_breakdown_for_chart = calculate_benefits(
-            avg_salary, reserve_days, unit_type, num_children, is_married,
-            has_non_working_spouse, is_student, tuition_cost, road_6_cost_enabled, road_6_cost,
-            babysitter_cost_enabled, dog_boarding_cost, vacation_cancel_cost, therapy_cost,
-            camps_cost, is_tzav_8, mortgage_rent_cost_input, needs_dedicated_medical_assistance, needs_preferred_loans,
-            is_holiday_period_str # Pass the new input
-        )
-        st.session_state.results_calculated = True
-        st.session_state.selected_tab_index = 1 # Switch to the Summary tab
-        st.session_state.avg_salary_display = avg_salary
-        st.session_state.reserve_days_display = reserve_days
-        st.rerun() # Trigger a rerun to update the displayed tab
-
-    add_footer() # Add footer to Input Data tab as well
-
-with tab2:
-    # This block will be displayed if the results_calculated is True, regardless of how the tab was selected.
-    if st.session_state.results_calculated:
-        st.markdown('<h2 class="subheader">סיכום הטבות וחישובים</h2>', unsafe_allow_html=True)
-
-        daily_salary_value = 0
-        if st.session_state.avg_salary_display > 0:
-            daily_salary_value = st.session_state.avg_salary_display / 30
-
-        total_monetary_all_benefits = st.session_state.daily_salary_compensation_val + st.session_state.total_monetary_benefits_immediate + st.session_state.total_monetary_benefits_future
-        daily_value_with_benefits = 0
-        if st.session_state.reserve_days_display > 0:
-            daily_value_with_benefits = total_monetary_all_benefits / st.session_state.reserve_days_display
-
-        col3, col4 = st.columns(2)
-
-        with col3:
-            st.markdown(f"""
-            <div class="metric-card">
-                <h3>שווי יום מילואים (משכר בלבד)</h3>
-                <p>{daily_salary_value:,.2f} ש"ח</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col4:
-            st.markdown(f"""
-            <div class="metric-card">
-                <h3>שווי יום מילואים (כולל כל ההטבות, מיידיות ועתידיות)</h3>
-                <p>{daily_value_with_benefits:,.2f} ש"ח</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        st.markdown('---')
-
-        chart_data = [item for item in st.session_state.monetary_breakdown_for_chart if item["value"] > 0]
-        
-        if chart_data:
-            df_chart = pd.DataFrame(chart_data)
-            st.markdown('<h3 style="text-align: center; color: #333;">הרכב התוספות הכספיות (למעט תגמול שכר)</h3>', unsafe_allow_html=True) # Color changed to black
-            fig = px.pie(df_chart, values='value', names='name',
-                         title='פירוט התוספות הכספיות באחוזים',
-                         hole=0.4,
-                         color_discrete_sequence=px.colors.qualitative.Pastel)
-            fig.update_traces(textinfo='percent+label', pull=[0.05]*len(df_chart))
-            fig.update_layout(showlegend=True, title_x=0.5)
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.info("אין תוספות כספיות נוספות (מלבד תגמול שכר) לחישוב תרשים פאי, או שלא הוזנו נתונים רלוונטיים.")
-        
-        st.markdown('---')
-
-        if st.session_state.entitlements:
-            df_entitlements = pd.DataFrame(st.session_state.entitlements)
-            df_entitlements = df_entitlements[['קטגוריה', 'הטבה / תגמול', 'פירוט והערות', 'סוג תשלום', 'סכום משוער (ש״ח)']]
-            st.write("### הטבות והטבות כספיות משוערות שאתם זכאים להן:")
-            st.dataframe(df_entitlements, use_container_width=True)
-        else:
-            st.info("נראה שכרגע אין הטבות כספיות משוערות על בסיס הנתונים שהוזנו. ייתכן שאתם עדיין זכאים להטבות לא כספיות או שהנתונים דורשים בירור נוסף.")
-
-    else:
-        st.info("אנא מלאו את הפרטים בטאב 'Input Data' ולחצו על 'חשב הטבות' כדי לראות את התוצאות.")
-
-    st.markdown("---")
-    st.info("""
-        **הערה חשובה**:
-        * החישובים והנתונים באפליקציה זו הינם **הערכה בלבד** ואינם מהווים ייעוץ משפטי או תחליף לבירור רשמי מול הגופים הרלוונטיים (כגון ביטוח לאומי, אגף כוח אדם בצה"ל, רשויות מקומיות, וכדומה).
-        * סכומי ההטבות המדויקים, תנאי הזכאות והעדכונים משתנים מעת לעת.
-        * מומלץ לבדוק תמיד את המידע העדכני ביותר באתרי האינטרנט הרשמיים של צה"ל, הביטוח הלאומי וגופים ממשלתיים נוספים.
-        """)
+    st.markdown('<h1 class="main-header" style="margin-top: 100px;">ברוכים הבאים למחשבון הטבות המילואים!</h1>', unsafe_allow_html=True)
+    st.markdown("""
+        <p style="font-size: 1.2em; text-align: center; color: #333;">
+            כלי זה פותח על ידי משרת מילואים פעיל, רב-סרן (מיל׳) אבי לובצ׳יק, 
+            במחווה למשרתי המילואים, ומטרתו לסייע לכם בהערכה ראשונית של זכויותיכם והטבותיכם.
+        </p>
+        <p style="font-size: 1.2em; text-align: center; color: #333;">
+            <strong style="color: red;">חשוב ביותר:</strong> אין להזין נתונים אישיים מזהים כגון תעודת זהות, שם יחידה או מספר אישי. 
+            הכלי הינו אנונימי לחלוטין ומיועד למטרות חישוב כלליות בלבד.
+        </p>
+        <p style="font-size: 1.2em; text-align: center; color: #333;">
+            <span style="font-weight: bold; color: #004D40;">אנא שימו לב:</span> אין לעשות בכלי זה כל שימוש מסחרי, וכל הזכויות שייכות לחברת <strong>Drishti Consulting</strong>. 
+            מפתח הכלי אינו בקיא באופן מלא בכל היבטי התחום, וייתכנו טעויות או אי-דיוקים בחישובים ובהצגת המידע. 
+            הכלי אינו מהווה ייעוץ משפטי או תחליף לבירור רשמי מול הגופים המוסמכים.
+        </p>
+    """, unsafe_allow_html=True)
     
-    add_footer()
+    st.markdown("<br>", unsafe_allow_html=True) # Add some space
+    col_button = st.columns(3)
+    with col_button[1]: # Center the button
+        if st.button("התחל שימוש במחשבון", key="start_button"):
+            st.session_state.app_mode = 'main_app'
+            st.rerun()
+    
+    add_footer() # Footer for landing page
+
+elif st.session_state.app_mode == 'main_app':
+    # Main app content (tabs etc.)
+    # Main header with "טיל" styling
+    st.markdown('<h1 class="main-header">מחשבון הטבות ושווי יום מילואים</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="app-subtitle">כלי עזר לחיילי מילואים להערכת הטבות וחישוב שווי יום שירות.</p>', unsafe_allow_html=True)
+    st.markdown("---")
+
+    # Create tabs with English names
+    tab_names = ["Input Data", "Summary"]
+    # Using default_index based on session state to control active tab
+    tab1, tab2 = st.tabs(tab_names, default_index=st.session_state.selected_tab_index)
+
+
+    with tab1:
+        st.markdown('<h2 class="subheader">פרטים אישיים ונתוני שירות</h2>', unsafe_allow_html=True)
+
+        col1_input, col2_input = st.columns(2)
+
+        with col1_input:
+            st.markdown("### נתוני שכר ושירות")
+            avg_salary = st.number_input("שכר ממוצע ב-3 חודשים אחרונים (נטו, בשקלים):", min_value=0, value=10000, step=100, key="avg_salary_input")
+            reserve_days = st.number_input("מספר ימי מילואים ששירתו השנה:", min_value=0, value=30, step=1, key="reserve_days_input")
+            unit_type = st.selectbox("סוג יחידה:", ["לוחם", "עורף"], key="unit_type_select")
+
+            # Replaced date inputs with a single selectbox for holiday periods
+            st.markdown("### תקופת שירות מילואים")
+            is_holiday_period_str = st.selectbox(
+                "האם המילואים היו בתקופה של קייטנות קיץ/פסח/חגי תשרי?",
+                ["לא", "כן"],
+                key="is_holiday_period_select"
+            )
+
+
+        with col2_input:
+            st.markdown("### פרטים משפחתיים וסטטוס")
+            is_married_str = st.selectbox("האם נשואים?", ["לא", "כן"], key="is_married_select")
+            is_married = (is_married_str == "כן")
+            num_children = st.number_input("מספר ילדים (מתחת לגיל 18):", min_value=0, value=0, step=1, key="num_children_input")
+            has_non_working_spouse_str = st.selectbox("האם בן/בת הזוג לא עובד/ת?", ["לא", "כן"], key="has_non_working_spouse_select")
+            has_non_working_spouse = (has_non_working_spouse_str == "כן")
+            is_student_str = st.selectbox("האם סטודנט/ית?", ["לא", "כן"], key="is_student_select")
+            is_student = (is_student_str == "כן")
+            is_tzav_8_str = st.selectbox("האם שירתו בצו 8 השנה?", ["לא", "כן"], key="is_tzav_8_select")
+            is_tzav_8 = (is_tzav_8_str == "כן")
+
+
+        st.markdown('<h2 class="subheader">הוצאות נלוות</h2>', unsafe_allow_html=True)
+
+        road_6_cost_enabled_str = st.selectbox("האם השתמשו בכביש 6?", ["לא", "כן"], key="road_6_enabled_select")
+        road_6_cost_enabled = (road_6_cost_enabled_str == "כן")
+        road_6_cost = 0
+        if road_6_cost_enabled:
+            road_6_cost = st.number_input("עלות שימוש בכביש 6 לחודש (בשקלים):", min_value=0, value=0, step=10, key="road_6_cost_input")
+
+        babysitter_cost_enabled_str = st.selectbox("האם שילמו על בייביסיטר?", ["לא", "כן"], key="babysitter_enabled_select")
+        babysitter_cost_enabled = (babysitter_cost_enabled_str == "כן")
+        babysitter_cost = 0
+        if babysitter_cost_enabled:
+            babysitter_cost = st.number_input("עלות בייביסיטר לחודש (בשקלים):", min_value=0, value=0, step=50, key="babysitter_cost_input")
+
+        dog_boarding_cost_enabled_str = st.selectbox("האם שילמו על פנסיון כלבים?", ["לא", "כן"], key="dog_boarding_enabled_select")
+        dog_boarding_cost_enabled = (dog_boarding_cost_enabled_str == "כן")
+        dog_boarding_cost = 0
+        if dog_boarding_cost_enabled:
+            dog_boarding_cost = st.number_input("עלות פנסיון כלבים (בשקלים):", min_value=0, value=0, step=50, key="dog_boarding_cost_input")
+
+        vacation_cancel_cost_enabled_str = st.selectbox("האם נאלצו לבטל חופשה/טיסה עקב שירות מילואים?", ["לא", "כן"], key="vacation_cancel_enabled_select")
+        vacation_cancel_cost_enabled = (vacation_cancel_cost_enabled_str == "כן")
+        vacation_cancel_cost = 0
+        if vacation_cancel_cost_enabled:
+            vacation_cancel_cost = st.number_input("עלות ביטול חופשה/טיסה (בשקלים, סכום הפיצוי המגיע):", min_value=0, value=0, step=100, key="vacation_cancel_cost_input")
+
+        therapy_cost_enabled_str = st.selectbox("האם שילמו על טיפול רגשי/נפשי?", ["לא", "כן"], key="therapy_enabled_select")
+        therapy_cost_enabled = (therapy_cost_enabled_str == "כן")
+        therapy_cost = 0
+        if therapy_cost_enabled:
+            therapy_cost = st.number_input("עלות טיפול רגשי/נפשי (בשקלים):", min_value=0, value=0, step=50, key="therapy_cost_input")
+
+        camps_cost_enabled_str = st.selectbox("האם שילמו על קייטנות לילדים?", ["לא", "כן"], key="camps_enabled_select")
+        camps_cost_enabled = (camps_cost_enabled_str == "כן")
+        camps_cost = 0
+        if camps_cost_enabled:
+            camps_cost = st.number_input("עלות קייטנות (בשקלים, לשנה):", min_value=0, value=0, step=50, key="camps_cost_input")
+
+        tuition_cost_enabled_str = st.selectbox("האם שילמו על שכר לימוד (לסטודנטים)?", ["לא", "כן"], key="tuition_enabled_select")
+        tuition_cost_enabled = (tuition_cost_enabled_str == "כן")
+        tuition_cost = 0
+        if tuition_cost_enabled:
+            tuition_cost = st.number_input("עלות שכר לימוד שנתית (בשקלים):", min_value=0, value=0, step=100, key="tuition_cost_input")
+
+        mortgage_rent_cost_enabled_str = st.selectbox("האם זקוקים/קיבלו סיוע בשכר דירה/משכנתא?", ["לא", "כן"], key='mortgage_rent_checkbox_input')
+        mortgage_rent_cost_enabled = (mortgage_rent_cost_enabled_str == "כן")
+        mortgage_rent_cost_input = 0
+        if mortgage_rent_cost_enabled:
+            mortgage_rent_cost_input = st.number_input("סכום סיוע בשכר דירה/משכנתא (בשקלים):", min_value=0, value=0, step=50, key='mortgage_rent_input_field')
+
+        needs_dedicated_medical_assistance_str = st.selectbox("האם יש צורך בסיוע רפואי ייעודי עקב פציעה/מחלה הקשורה לשירות?", ["לא", "כן"], key="dedicated_medical_select")
+        needs_dedicated_medical_assistance = (needs_dedicated_medical_assistance_str == "כן")
+        needs_preferred_loans_str = st.selectbox("האם מעוניינים לבדוק זכאות להלוואות בתנאים מועדפים?", ["לא", "כן"], key="preferred_loans_select")
+        needs_preferred_loans = (needs_preferred_loans_str == "כן")
+
+        if st.button("חשב הטבות", key="calculate_button"):
+            st.session_state.entitlements, \
+            st.session_state.daily_salary_compensation_val, \
+            st.session_state.total_monetary_benefits_immediate, \
+            st.session_state.total_monetary_benefits_future, \
+            st.session_state.monetary_breakdown_for_chart = calculate_benefits(
+                avg_salary, reserve_days, unit_type, num_children, is_married,
+                has_non_working_spouse, is_student, tuition_cost, road_6_cost_enabled, road_6_cost,
+                babysitter_cost_enabled, dog_boarding_cost, vacation_cancel_cost, therapy_cost,
+                camps_cost, is_tzav_8, mortgage_rent_cost_input, needs_dedicated_medical_assistance, needs_preferred_loans,
+                is_holiday_period_str # Pass the new input
+            )
+            st.session_state.results_calculated = True
+            st.session_state.selected_tab_index = 1 # Switch to the Summary tab
+            st.session_state.avg_salary_display = avg_salary
+            st.session_state.reserve_days_display = reserve_days
+            st.rerun() # Trigger a rerun to update the displayed tab
+
+        add_footer() # Add footer to Input Data tab as well
+
+    with tab2:
+        # This block will be displayed if the results_calculated is True, regardless of how the tab was selected.
+        if st.session_state.results_calculated:
+            st.markdown('<h2 class="subheader">סיכום הטבות וחישובים</h2>', unsafe_allow_html=True)
+
+            daily_salary_value = 0
+            if st.session_state.avg_salary_display > 0:
+                daily_salary_value = st.session_state.avg_salary_display / 30
+
+            total_monetary_all_benefits = st.session_state.daily_salary_compensation_val + st.session_state.total_monetary_benefits_immediate + st.session_state.total_monetary_benefits_future
+            daily_value_with_benefits = 0
+            if st.session_state.reserve_days_display > 0:
+                daily_value_with_benefits = total_monetary_all_benefits / st.session_state.reserve_days_display
+
+            col3, col4 = st.columns(2)
+
+            with col3:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <h3>שווי יום מילואים (משכר בלבד)</h3>
+                    <p>{daily_salary_value:,.2f} ש"ח</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+            with col4:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <h3>שווי יום מילואים (כולל כל ההטבות, מיידיות ועתידיות)</h3>
+                    <p>{daily_value_with_benefits:,.2f} ש"ח</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown('---')
+
+            chart_data = [item for item in st.session_state.monetary_breakdown_for_chart if item["value"] > 0]
+            
+            if chart_data:
+                df_chart = pd.DataFrame(chart_data)
+                st.markdown('<h3 style="text-align: center; color: #333;">הרכב התוספות הכספיות (למעט תגמול שכר)</h3>', unsafe_allow_html=True) # Color changed to black
+                fig = px.pie(df_chart, values='value', names='name',
+                             title='פירוט התוספות הכספיות באחוזים',
+                             hole=0.4,
+                             color_discrete_sequence=px.colors.qualitative.Pastel)
+                fig.update_traces(textinfo='percent+label', pull=[0.05]*len(df_chart))
+                fig.update_layout(showlegend=True, title_x=0.5)
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("אין תוספות כספיות נוספות (מלבד תגמול שכר) לחישוב תרשים פאי, או שלא הוזנו נתונים רלוונטיים.")
+            
+            st.markdown('---')
+
+            if st.session_state.entitlements:
+                df_entitlements = pd.DataFrame(st.session_state.entitlements)
+                df_entitlements = df_entitlements[['קטגוריה', 'הטבה / תגמול', 'פירוט והערות', 'סוג תשלום', 'סכום משוער (ש״ח)']]
+                st.write("### הטבות והטבות כספיות משוערות שאתם זכאים להן:")
+                st.dataframe(df_entitlements, use_container_width=True)
+            else:
+                st.info("נראה שכרגע אין הטבות כספיות משוערות על בסיס הנתונים שהוזנו. ייתכן שאתם עדיין זכאים להטבות לא כספיות או שהנתונים דורשים בירור נוסף.")
+
+        else:
+            st.info("אנא מלאו את הפרטים בטאב 'Input Data' ולחצו על 'חשב הטבות' כדי לראות את התוצאות.")
+
+        st.markdown("---")
+        st.info("""
+            **הערה חשובה**:
+            * החישובים והנתונים באפליקציה זו הינם **הערכה בלבד** ואינם מהווים ייעוץ משפטי או תחליף לבירור רשמי מול הגופים הרלוונטיים (כגון ביטוח לאומי, אגף כוח אדם בצה"ל, רשויות מקומיות, וכדומה).
+            * סכומי ההטבות המדויקים, תנאי הזכאות והעדכונים משתנים מעת לעת.
+            * מומלץ לבדוק תמיד את המידע העדכני ביותר באתרי האינטרנט הרשמיים של צה"ל, הביטוח הלאומי וגופים ממשלתיים נוספים.
+            """)
+        
+        add_footer()
