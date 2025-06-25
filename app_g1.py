@@ -299,7 +299,7 @@ def calculate_benefits(
             "קטגוריה": "הטבות כלליות",
             "הטבה / תגמול": "הטבות בארנונה / מים (רשות מקומית)",
             "פירוט והערות": "הנחות אפשריות בתשלומי ארנונה או מים.",
-            "סכום משוער (ש״ח)": "לא כספי",
+            "סכום משוער (ש״ componente": "לא כספי",
             "סוג תשלום": "הטבה"
         })
         entitlements.append({
@@ -475,6 +475,12 @@ st.markdown("""
         }
         .stTable thead th, .dataframe thead th {
             text-align: right; /* Align table headers to the right */
+        }
+        .dataframe tbody tr th { /* For row indices if they appear */
+            text-align: right !important;
+        }
+        .dataframe tbody td { /* For table cells */
+            text-align: right !important;
         }
 
 
@@ -692,10 +698,10 @@ elif st.session_state.app_mode == 'main_app':
                 is_holiday_period_str # Pass the new input
             )
             st.session_state.results_calculated = True
-            st.session_state.selected_tab_index = 1 # Switch to the Summary tab
-            st.session_state.avg_salary_display = avg_salary
-            st.session_state.reserve_days_display = reserve_days
-            st.rerun() # Trigger a rerun to update the displayed tab
+            # To automatically switch tabs, the Streamlit version must support `default_index`
+            # in st.tabs(). If not, the user will have to manually switch.
+            # st.session_state.selected_tab_index = 1 # This line is commented out to prevent errors if not supported
+            st.rerun() # Trigger a rerun to update the displayed content
 
         add_footer() # Add footer to Input Data tab as well
 
@@ -752,6 +758,10 @@ elif st.session_state.app_mode == 'main_app':
 
             if st.session_state.entitlements:
                 df_entitlements = pd.DataFrame(st.session_state.entitlements)
+                # Ensure numbers in the table are right-aligned
+                df_entitlements['סכום משוער (ש״ח)'] = df_entitlements['סכום משוער (ש״ח)'].apply(
+                    lambda x: f"{x:,.2f}" if isinstance(x, (int, float)) else x
+                )
                 df_entitlements = df_entitlements[['קטגוריה', 'הטבה / תגמול', 'פירוט והערות', 'סוג תשלום', 'סכום משוער (ש״ח)']]
                 st.write("### הטבות והטבות כספיות משוערות שאתם זכאים להן:")
                 st.dataframe(df_entitlements, use_container_width=True)
